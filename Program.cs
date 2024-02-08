@@ -1,10 +1,12 @@
 ﻿using BasicAuthLogon.Models;
 using Newtonsoft.Json;
+using PasswordBasedAuthLogon;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,16 +16,10 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
-            args = ParseArgs(args);
-            foreach (string arg in args)
-            {
-                Console.WriteLine(arg);
-            }
-        }
-
-        static string[] ParseArgs(string[] args)
-        {
-            return args;
+            Console.WriteLine(GlobalUserManager.GetUsername());
+            Console.WriteLine(GlobalUserManager.GetPassword());
+            Console.WriteLine(GlobalUserManager.GetApplicationID());
+            Console.WriteLine(GlobalUserManager.GetSecretID());
         }
     }
 }
