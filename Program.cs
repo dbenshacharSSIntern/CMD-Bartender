@@ -16,9 +16,6 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(GlobalUserManager.GetUsername());
-            GlobalUserManager.ChangeGlobalUsername("New");
-            Console.WriteLine(GlobalUserManager.GetUsername());
         }
     }
 }

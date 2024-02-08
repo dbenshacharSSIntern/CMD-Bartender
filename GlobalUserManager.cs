@@ -101,19 +101,19 @@ namespace PasswordBasedAuthLogon
             SetUsername(NewValue);
         }
 
-        private static void ChangeGlobalPassword(String NewValue)
+        public static void ChangeGlobalPassword(String NewValue)
         {
             ChangeGlobalInfo(NewValue, 1);
             SetPassword(NewValue);
         }
 
-        private static void ChangeGlobalApplicationID(String NewValue)
+        public static void ChangeGlobalApplicationID(String NewValue)
         {
             ChangeGlobalInfo(NewValue, 2);
             SetApplicationID(NewValue);
         }
 
-        private static void ChangeGlobalSecretID(String NewValue)
+        public static void ChangeGlobalSecretID(String NewValue)
         {
             ChangeGlobalInfo(NewValue, 3);
             SetSecredID(NewValue);
@@ -128,6 +128,11 @@ namespace PasswordBasedAuthLogon
         {
             ConfigReader[LineNumber] = NewValue;
             File.WriteAllLines(GetConfigPath(), ConfigReader);
+        }
+
+        private static void CreateConfigFile()
+        {
+            File.WriteAllLines(GetConfigPath(), new String[4]);
         }
     }
 }
