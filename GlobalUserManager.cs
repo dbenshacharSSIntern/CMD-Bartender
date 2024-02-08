@@ -11,52 +11,31 @@ namespace PasswordBasedAuthLogon
     internal static class GlobalUserManager
     {
         private static String ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
-        private static IEnumerable<string> ConfigReader = File.ReadLines(ConfigPath);
+        private static String[] ConfigReader = File.ReadAllLines(ConfigPath);
 
         private static String Username = RetriveUsername();
         private static String Password = RetrivePassword();
         private static String ApplicationID = RetriveApplicationID();
         private static String SecretID = RetriveSecretID();
 
-        private static String BaseRetriveConfigInfo(String RetrieveKey, String RetriveName, int LineNumber)
-        {
-            String Line;
-            String[] Lines;
-            try
-            {
-                Line = GetConfigFileLine(LineNumber);
-                if (Line == null) { throw new ArgumentException("Config file line is blank."); }
-                Lines = Line.Split(" ");
-                if (Lines[0] != RetrieveKey)
-                {
-                    throw new ArgumentException(RetriveName + " not properly defined in config file.");
-                }
-                return Lines[1];
-            }
-            catch (FileNotFoundException ex)
-            {
-                throw new FileNotFoundException("Config file for user is not found");
-            }
-        }
-
         private static String RetriveUsername()
         {
-            return BaseRetriveConfigInfo("username,", "Username", 0);
+            return GetConfigFileLine(0);
         }
 
         private static String RetrivePassword()
         {
-            return BaseRetriveConfigInfo("password,", "Password", 1);
+            return GetConfigFileLine(1);
         }
 
         private static String RetriveApplicationID()
         {
-            return BaseRetriveConfigInfo("applicationID,", "ApplicationID", 2);
+            return GetConfigFileLine(2);
         }
 
         private static String RetriveSecretID()
         {
-            return BaseRetriveConfigInfo("secretID,", "SecretID", 3);
+            return GetConfigFileLine(3);
         }
 
         public static String GetUsername()
@@ -104,9 +83,51 @@ namespace PasswordBasedAuthLogon
             return ConfigPath;
         }
 
+        private static void ChangeGlobalInfo(String NewValue,int LineNumber)
+        {
+            try
+            {
+                WriteConfigFileLine(LineNumber, NewValue);
+            }
+            catch
+            {
+                throw new Exception("There is an unexpected error in your config file");
+            }
+        }
+
+        public static void ChangeGlobalUsername(String NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 0);
+            SetUsername(NewValue);
+        }
+
+        private static void ChangeGlobalPassword(String NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 1);
+            SetPassword(NewValue);
+        }
+
+        private static void ChangeGlobalApplicationID(String NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 2);
+            SetApplicationID(NewValue);
+        }
+
+        private static void ChangeGlobalSecretID(String NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 3);
+            SetSecredID(NewValue);
+        }
+
         private static String GetConfigFileLine(int LineNumber)
         {
-            return ConfigReader.ElementAt(LineNumber);
+            return ConfigReader[LineNumber];
+        }
+
+        private static void WriteConfigFileLine(int LineNumber, String NewValue)
+        {
+            ConfigReader[LineNumber] = NewValue;
+            File.WriteAllLines(GetConfigPath(), ConfigReader);
         }
     }
 }
