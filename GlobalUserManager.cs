@@ -11,12 +11,30 @@ namespace PasswordBasedAuthLogon
     internal static class GlobalUserManager
     {
         private static String ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
-        private static String[] ConfigReader = File.ReadAllLines(ConfigPath);
+        private static String[] ConfigReader;
+        private static bool configFileExists = false;
 
-        private static String Username = RetriveUsername();
-        private static String Password = RetrivePassword();
-        private static String ApplicationID = RetriveApplicationID();
-        private static String SecretID = RetriveSecretID();
+        private static String Username;
+        private static String Password;
+        private static String ApplicationID;
+        private static String SecretID;
+
+        public static void initialize()
+        {
+            try
+            {
+                ConfigReader = File.ReadAllLines(ConfigPath);
+
+                Username = RetriveUsername();
+                Password = RetrivePassword();
+                ApplicationID = RetriveApplicationID();
+                SecretID = RetriveSecretID();
+                configFileExists = true;
+            } catch (Exception ex)
+            {
+                Console.WriteLine("Warning: Config file not found for user and may not contain correct information.");
+            }
+        }
 
         private static String RetriveUsername()
         {
@@ -91,7 +109,7 @@ namespace PasswordBasedAuthLogon
             }
             catch
             {
-                throw new Exception("There is an unexpected error in your config file");
+                throw new Exception("There is an unexpected error in your config file.");
             }
         }
 
@@ -130,9 +148,15 @@ namespace PasswordBasedAuthLogon
             File.WriteAllLines(GetConfigPath(), ConfigReader);
         }
 
-        private static void CreateConfigFile()
+        public static void CreateConfigFile()
         {
             File.WriteAllLines(GetConfigPath(), new String[4]);
+            initialize();
+        }
+
+        public static bool GetConfigFileExists()
+        {
+            return configFileExists;
         }
     }
 }

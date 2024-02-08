@@ -17,6 +17,7 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
+            GlobalUserManager.initialize();
             CommandArgs CMD = ParseArgs(args);
             Console.WriteLine(CMD.run());
         }
@@ -50,20 +51,20 @@ namespace BasicAuthLogon
         public CommandArgs(String command)
         {
             Command = command;
-            Args = new string[] { "-h"};
+            Args = new string[] { "help"};
         }
 
         public String run()
         {
             if (Command == null)
             {
-                return CommandManager.Help(null, true);
+                return CommandManager.Run(null, true, Args);
             }
-            if (Args.Contains("-h"))
+            if (Args.Contains("help"))
             {
-                return CommandManager.Help(Command, true);
+                return CommandManager.Run(Command, true, Args);
             }
-            return "";
+            return CommandManager.Run(Command, false, Args);
         }
     }
 }
