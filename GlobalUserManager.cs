@@ -11,20 +11,20 @@ namespace PasswordBasedAuthLogon
     internal static class GlobalUserManager
     {
         private static String ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
-        private static StreamReader ConfigReader = new StreamReader(ConfigPath);
+        private static IEnumerable<string> ConfigReader = File.ReadLines(ConfigPath);
 
         private static String Username = RetriveUsername();
         private static String Password = RetrivePassword();
         private static String ApplicationID = RetriveApplicationID();
         private static String SecretID = RetriveSecretID();
 
-        private static String BaseRetriveConfigInfo(String RetrieveKey, String RetriveName)
+        private static String BaseRetriveConfigInfo(String RetrieveKey, String RetriveName, int LineNumber)
         {
             String Line;
             String[] Lines;
             try
             {
-                Line = ConfigReader.ReadLine();
+                Line = GetConfigFileLine(LineNumber);
                 if (Line == null) { throw new ArgumentException("Config file line is blank."); }
                 Lines = Line.Split(" ");
                 if (Lines[0] != RetrieveKey)
@@ -41,22 +41,22 @@ namespace PasswordBasedAuthLogon
 
         private static String RetriveUsername()
         {
-            return BaseRetriveConfigInfo("username,", "Username");
+            return BaseRetriveConfigInfo("username,", "Username", 0);
         }
 
         private static String RetrivePassword()
         {
-            return BaseRetriveConfigInfo("password,", "Password");
+            return BaseRetriveConfigInfo("password,", "Password", 1);
         }
 
         private static String RetriveApplicationID()
         {
-            return BaseRetriveConfigInfo("applicationID,", "ApplicationID");
+            return BaseRetriveConfigInfo("applicationID,", "ApplicationID", 2);
         }
 
         private static String RetriveSecretID()
         {
-            return BaseRetriveConfigInfo("secretID,", "SecretID");
+            return BaseRetriveConfigInfo("secretID,", "SecretID", 3);
         }
 
         public static String GetUsername()
@@ -102,6 +102,11 @@ namespace PasswordBasedAuthLogon
         public static String GetConfigPath()
         {
             return ConfigPath;
+        }
+
+        private static String GetConfigFileLine(int LineNumber)
+        {
+            return ConfigReader.ElementAt(LineNumber);
         }
     }
 }
