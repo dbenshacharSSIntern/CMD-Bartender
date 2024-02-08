@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PasswordBasedAuthLogon": {
+      "commandName": "Project",
+      "commandLineArgs": "-a Alpha -b Beta"
+    }
+  }
+}
