@@ -4,6 +4,7 @@ using PasswordBasedAuthLogon;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -16,6 +17,53 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
+            CommandArgs CMD = ParseArgs(args);
+            Console.WriteLine(CMD.run());
+        }
+
+        static CommandArgs ParseArgs(String[] args)
+        {
+            CommandArgs CMD;
+            if (args.Length < 1)
+            {
+                throw new ArgumentException("1 or more arguments must be passed to program");
+            }
+            if (args.Length == 1) {
+                CMD = new CommandArgs(args[0]);
+            } else
+            {
+                CMD = new CommandArgs(args[0], args[1..]);
+            }
+            return CMD;
+        }
+    }
+    class CommandArgs
+    {
+        private String Command;
+        private String[] Args;
+        public CommandArgs(String command, string[] args)
+        {
+            Command = command;
+            Args = args;
+        }
+
+        public CommandArgs(String command)
+        {
+            Command = command;
+            Args = new string[] { "-h"};
+        }
+
+        public String run()
+        {
+            if (Command == null)
+            {
+                return CommandManager.Help(null, true);
+            }
+            if (Args.Contains("-h"))
+            {
+                return CommandManager.Help(Command, true);
+            }
+            return "";
         }
     }
 }
