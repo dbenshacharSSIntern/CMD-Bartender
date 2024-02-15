@@ -18,6 +18,7 @@ namespace PasswordBasedAuthLogon
         private static string Password;
         private static string ApplicationID;
         private static string SecretID;
+        private static string Directory;
 
         public static void initialize() 
         {
@@ -29,6 +30,7 @@ namespace PasswordBasedAuthLogon
                 Password = RetrivePassword();
                 ApplicationID = RetriveApplicationID();
                 SecretID = RetriveSecretID();
+                Directory = RetriveDirectory();
                 configFileExists = true;
             } catch
             {
@@ -54,6 +56,11 @@ namespace PasswordBasedAuthLogon
         private static string RetriveSecretID()
         {
             return GetConfigFileLine(3);
+        }
+
+        private static string RetriveDirectory()
+        {
+            return GetConfigFileLine(4);
         }
 
         public static string GetUsername()
@@ -101,6 +108,16 @@ namespace PasswordBasedAuthLogon
             return ConfigPath;
         }
 
+        public static string GetDirectory()
+        {
+            return Directory;
+        }
+
+        private static void SetDirectory(string value)
+        {
+            Directory = value;
+        }
+
         private static void ChangeGlobalInfo(string NewValue,int LineNumber)
         {
             try
@@ -135,6 +152,12 @@ namespace PasswordBasedAuthLogon
         {
             ChangeGlobalInfo(NewValue, 3);
             SetSecredID(NewValue);
+        }
+
+        public static void ChangeGlobalDirectory(string NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 4);
+            SetDirectory(NewValue);
         }
 
         private static string GetConfigFileLine(int LineNumber)
