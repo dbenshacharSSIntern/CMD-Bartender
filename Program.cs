@@ -17,9 +17,16 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
-            GlobalUserManager.initialize();
-            CommandArgs CMD = ParseArgs(args);
-            Console.WriteLine(CMD.run());
+            try
+            {
+                GlobalConfigManager.initialize();
+                CommandArgs CMD = ParseArgs(args);
+                Console.WriteLine(CMD.run());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An unexpected exception occured: \n" + ex.Message);
+            }
         }
 
         static CommandArgs ParseArgs(String[] args)

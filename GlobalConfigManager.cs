@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PasswordBasedAuthLogon
 {
-    internal static class GlobalUserManager
+    internal static class GlobalConfigManager
     {
         private static String ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
         private static String[] ConfigReader;

@@ -1,10 +1,11 @@
 ﻿using PasswordBasedAuthLogon;
 using System;
+using System.Linq;
 
 namespace BasicAuthLogon
 {
     internal static class CommandManager
-    {
+        {
         public static String Run(String Command, bool isHelp, String[] args)
         {
             if (Command == "dir" && isHelp)
@@ -61,31 +62,35 @@ namespace BasicAuthLogon
 
         public static String Run(String[] args)
         {
-            if (!GlobalUserManager.GetConfigFileExists())
+            if (!GlobalConfigManager.GetConfigFileExists())
             {
-                GlobalUserManager.CreateConfigFile();
+                GlobalConfigManager.CreateConfigFile();
             }
             if (args.Length > 2)
             {
                 throw new ArgumentException("Config only requires 2 commands.");
             }
-            if (args[0] == "username")
+            else if (args[0] == "username")
             {
-                GlobalUserManager.ChangeGlobalUsername(args[1]);
+                GlobalConfigManager.ChangeGlobalUsername(args[1]);
+                return "username changed succesfully";
             }
-            if (args[0] == "password")
+            else if (args[0] == "password")
             {
-                GlobalUserManager.ChangeGlobalPassword(args[1]);
+                GlobalConfigManager.ChangeGlobalPassword(args[1]);
+                return "password changed succesfully";
             }
-            if (args[0] == "appID")
+            else if (args[0] == "appID")
             {
-                GlobalUserManager.ChangeGlobalApplicationID(args[1]);
+                GlobalConfigManager.ChangeGlobalApplicationID(args[1]);
+                return "appID changed succesfully";
             }
-            if (args[0] == "secretID")
+            else if (args[0] == "secretID")
             {
-                GlobalUserManager.ChangeGlobalSecretID(args[1]);
+                GlobalConfigManager.ChangeGlobalSecretID(args[1]);
+                return "secretID changed succesfully";
             }
-            throw new ArgumentException(args[0] + " is not an aspect of this command.");
+            throw new ArgumentException(args[0] + " is not an aspect of command config.");
         }
     }
 }
