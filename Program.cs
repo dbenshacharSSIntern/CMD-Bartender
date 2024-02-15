@@ -21,7 +21,7 @@ namespace BasicAuthLogon
             {
                 GlobalConfigManager.initialize();
                 CommandArgs CMD = ParseArgs(args);
-                Console.WriteLine(CMD.run());
+                Console.WriteLine(CMD.Run());
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace BasicAuthLogon
             Args = new string[] { "help"};
         }
 
-        public string run()
+        public string Run()
         {
             if (Command == null)
             {
