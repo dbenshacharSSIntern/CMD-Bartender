@@ -6,7 +6,7 @@ namespace BasicAuthLogon
 {
     internal static class CommandManager
         {
-        public static String Run(String Command, bool isHelp, String[] args)
+        public static string Run(String Command, bool isHelp, String[] args)
         {
             if (Command == "dir" && isHelp)
             {
@@ -38,12 +38,12 @@ namespace BasicAuthLogon
     }
     static class DirCommand
     {
-        public static String Help()
+        public static string Help()
         {
             return "Run this command to see any files or folders in the current subdirectory";
         }
 
-        public static String Run(String[] args)
+        public static string Run(string[] args)
         {
             return "";
         }
@@ -51,7 +51,7 @@ namespace BasicAuthLogon
 
     static class ConfigCommand
     {
-        public static String Help()
+        public static string Help()
         {
             return "Here is how you can rune this command:\n" +
                 "config username {NewUserName}\n" +
@@ -60,7 +60,7 @@ namespace BasicAuthLogon
                 "config secretID {NewSecretID}\n";
         }
 
-        public static String Run(String[] args)
+        public static string Run(string[] args)
         {
             if (!GlobalConfigManager.GetConfigFileExists())
             {

@@ -29,7 +29,7 @@ namespace BasicAuthLogon
             }
         }
 
-        static CommandArgs ParseArgs(String[] args)
+        static CommandArgs ParseArgs(string[] args)
         {
             CommandArgs CMD;
             if (args.Length < 1)
@@ -47,21 +47,21 @@ namespace BasicAuthLogon
     }
     class CommandArgs
     {
-        private String Command;
-        private String[] Args;
-        public CommandArgs(String command, string[] args)
+        private string Command;
+        private string[] Args;
+        public CommandArgs(string command, string[] args)
         {
             Command = command;
             Args = args;
         }
 
-        public CommandArgs(String command)
+        public CommandArgs(string command)
         {
             Command = command;
             Args = new string[] { "help"};
         }
 
-        public String run()
+        public string run()
         {
             if (Command == null)
             {

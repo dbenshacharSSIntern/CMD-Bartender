@@ -10,16 +10,16 @@ namespace PasswordBasedAuthLogon
 {
     internal static class GlobalConfigManager
     {
-        private static String ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
-        private static String[] ConfigReader;
+        private static string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
+        private static string[] ConfigReader;
         private static bool configFileExists = false;
 
-        private static String Username;
-        private static String Password;
-        private static String ApplicationID;
-        private static String SecretID;
+        private static string Username;
+        private static string Password;
+        private static string ApplicationID;
+        private static string SecretID;
 
-        public static void initialize()
+        public static void initialize() 
         {
             try
             {
@@ -36,72 +36,72 @@ namespace PasswordBasedAuthLogon
             }
         }
 
-        private static String RetriveUsername()
+        private static string RetriveUsername()
         {
             return GetConfigFileLine(0);
         }
 
-        private static String RetrivePassword()
+        private static string RetrivePassword()
         {
             return GetConfigFileLine(1);
         }
 
-        private static String RetriveApplicationID()
+        private static string RetriveApplicationID()
         {
             return GetConfigFileLine(2);
         }
 
-        private static String RetriveSecretID()
+        private static string RetriveSecretID()
         {
             return GetConfigFileLine(3);
         }
 
-        public static String GetUsername()
+        public static string GetUsername()
         {
             return Username;
         }
 
-        private static void SetUsername(String value)
+        private static void SetUsername(string value)
         {
             Username = value;
         }
 
-        public static String GetPassword()
+        public static string GetPassword()
         {
             return Password;
         }
 
-        private static void SetPassword(String value)
+        private static void SetPassword(string value)
         {
             Password = value;
         }
 
-        public static String GetApplicationID()
+        public static string GetApplicationID()
         {
             return ApplicationID;
         }
 
-        private static void SetApplicationID(String value)
+        private static void SetApplicationID(string value)
         {
             ApplicationID = value;
         }
 
-        public static String GetSecretID()
+        public static string GetSecretID()
         {
             return SecretID;
         }
 
-        private static void SetSecredID(String value)
+        private static void SetSecredID(string value)
         {
             SecretID = value;
         }
 
-        public static String GetConfigPath()
+        public static string GetConfigPath()
         {
             return ConfigPath;
         }
 
-        private static void ChangeGlobalInfo(String NewValue,int LineNumber)
+        private static void ChangeGlobalInfo(string NewValue,int LineNumber)
         {
             try
             {
@@ -113,36 +113,36 @@ namespace PasswordBasedAuthLogon
             }
         }
 
-        public static void ChangeGlobalUsername(String NewValue)
+        public static void ChangeGlobalUsername(string NewValue)
         {
             ChangeGlobalInfo(NewValue, 0);
             SetUsername(NewValue);
         }
 
-        public static void ChangeGlobalPassword(String NewValue)
+        public static void ChangeGlobalPassword(string NewValue)
         {
             ChangeGlobalInfo(NewValue, 1);
             SetPassword(NewValue);
         }
 
-        public static void ChangeGlobalApplicationID(String NewValue)
+        public static void ChangeGlobalApplicationID(string NewValue)
         {
             ChangeGlobalInfo(NewValue, 2);
             SetApplicationID(NewValue);
         }
 
-        public static void ChangeGlobalSecretID(String NewValue)
+        public static void ChangeGlobalSecretID(string NewValue)
         {
             ChangeGlobalInfo(NewValue, 3);
             SetSecredID(NewValue);
         }
 
-        private static String GetConfigFileLine(int LineNumber)
+        private static string GetConfigFileLine(int LineNumber)
         {
             return ConfigReader[LineNumber];
         }
 
-        private static void WriteConfigFileLine(int LineNumber, String NewValue)
+        private static void WriteConfigFileLine(int LineNumber, string NewValue)
         {
             ConfigReader[LineNumber] = NewValue;
             File.WriteAllLines(GetConfigPath(), ConfigReader);
@@ -150,7 +150,7 @@ namespace PasswordBasedAuthLogon
 
         public static void CreateConfigFile()
         {
-            File.WriteAllLines(GetConfigPath(), new String[4]);
+            File.WriteAllLines(GetConfigPath(), new string[4]);
             initialize();
         }
 
