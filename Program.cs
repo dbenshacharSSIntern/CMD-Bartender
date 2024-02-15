@@ -19,7 +19,7 @@ namespace BasicAuthLogon
         {
         try
             {
-                GlobalConfigManager.initialize();
+                GlobalConfigManager.Initialize();
                 CommandArgs CMD = ParseArgs(args);
                 Console.WriteLine(CMD.Run());
             }

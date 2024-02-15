@@ -20,7 +20,7 @@ namespace PasswordBasedAuthLogon
         private static string SecretID;
         private static string Directory;
 
-        public static void initialize() 
+        public static void Initialize() 
         {
             try
             {
