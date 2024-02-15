@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace PasswordBasedAuthLogon
         private static string ApplicationID;
         private static string SecretID;
         private static string Directory;
+        private static string Website;
 
         public static void Initialize() 
         {
@@ -31,6 +33,7 @@ namespace PasswordBasedAuthLogon
                 ApplicationID = RetriveApplicationID();
                 SecretID = RetriveSecretID();
                 Directory = RetriveDirectory();
+                Website = RetriveWebsite();
                 configFileExists = true;
             } catch
             {
@@ -61,6 +64,11 @@ namespace PasswordBasedAuthLogon
         private static string RetriveDirectory()
         {
             return GetConfigFileLine(4);
+        }
+
+        private static string RetriveWebsite()
+        {
+            return GetConfigFileLine(5);
         }
 
         public static string GetUsername()
@@ -101,6 +109,16 @@ namespace PasswordBasedAuthLogon
         private static void SetSecredID(string value)
         {
             SecretID = value;
+        }
+
+        public static string GetWebsite()
+        {
+            return Website;
+        }
+
+        private static void SetWebsite(string value)
+        {
+            Website = value;
         }
 
         public static string GetConfigPath()
@@ -160,6 +178,12 @@ namespace PasswordBasedAuthLogon
             SetDirectory(NewValue);
         }
 
+        public static void ChangeGlobalWebsite(string NewValue)
+        {
+            ChangeGlobalInfo(NewValue, 5);
+            SetWebsite(NewValue);
+        }
+
         private static string GetConfigFileLine(int LineNumber)
         {
             return ConfigReader[LineNumber];
@@ -173,8 +197,8 @@ namespace PasswordBasedAuthLogon
 
         public static void CreateConfigFile()
         {
-            File.WriteAllLines(GetConfigPath(), new string[4]);
-            initialize();
+            File.WriteAllLines(GetConfigPath(), new string[5]);
+            Initialize();
         }
 
         public static bool GetConfigFileExists()
