@@ -20,6 +20,9 @@ namespace BasicAuthLogon
         try
             {
                 GlobalConfigManager.Initialize();
+                BartenderManager.Initalize();
+
+
                 CommandArgs CMD = ParseArgs(args);
                 Console.WriteLine(CMD.Run());
             }
