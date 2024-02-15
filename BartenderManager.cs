@@ -21,10 +21,15 @@ namespace BasicAuthLogon
         private static Uri URI = new Uri(Website);
 
         public static void Initalize() {
-            Client.BaseAddress = URI;
-            HttpResponseMessage code = Client.GetAsync(Website).Result;
-            AccessToken = Application.GetToken(code.StatusCode);
-            Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
+            try
+            {
+                Client.BaseAddress = URI;
+                HttpResponseMessage code = Client.GetAsync(Website).Result;
+                AccessToken = Application.GetToken(code.StatusCode);
+                Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
+            } catch {
+                throw new Exception("Website connection failed.");
+            }
         }
 
         public static void PrintDir() {
