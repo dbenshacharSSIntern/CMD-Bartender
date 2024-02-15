@@ -1,4 +1,4 @@
-﻿using BasicAuthLogon.Models;
+﻿using Barrista.Models;
 using Microsoft.Win32.SafeHandles;
 using Newtonsoft.Json;
 using PasswordBasedAuthLogon;
@@ -15,7 +15,7 @@ namespace BasicAuthLogon
     internal static class BartenderManager
     {
         private static HttpClient Client = new HttpClient();
-        private static TokenInfo AccessToken
+        private static TokenInfo AccessToken;
         private static App Application = new App();
         private static string Website = GlobalConfigManager.GetWebsite();
         private static Uri URI = new Uri(Website);
@@ -33,7 +33,7 @@ namespace BasicAuthLogon
         }
 
         public static void PrintDir() {
-            var id = GetFolder(AccesToken, "librarian://Main/Charlie" /*Destination: Will need to be changed*/).Result.Id;
+            var id = GetFolder(AccessToken, "librarian://Main/Charlie" /*Destination: Will need to be changed*/).Result.Id;
 
             var result = DisplayFolderDir(id, AccessToken).Result;
             if (result == null)
@@ -80,7 +80,7 @@ namespace BasicAuthLogon
             };
 
             FolderNoChildren targetFolder = null;
-            var files = new List<Models.File>();
+            var files = new List<Barrista.Models.File>();
             var subfolders = new List<FolderNoChildren>();
             do
             {

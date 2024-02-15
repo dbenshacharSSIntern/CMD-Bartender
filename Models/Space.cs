@@ -4,7 +4,7 @@ using System.Linq;
 
 #nullable enable
 
-namespace BasicAuthLogon.Models
+namespace Barrista.Models
 {
    public abstract class SpacePolicyBase
    {
