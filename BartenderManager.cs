@@ -8,13 +8,14 @@ using System.Net;
 using System.Net.Http;
 using static BasicAuthLogon.AccessTokenDecoder;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace BasicAuthLogon
 {
     internal static class BartenderManager
     {
         private static HttpClient Client = new HttpClient();
-        private static TokenInfo AccessToken;
+        private static TokenInfo AccessToken
         private static App Application = new App();
         private static string Website = GlobalConfigManager.GetWebsite();
         private static Uri URI = new Uri(Website);
@@ -24,6 +25,123 @@ namespace BasicAuthLogon
             HttpResponseMessage code = Client.GetAsync(Website).Result;
             AccessToken = Application.GetToken(code.StatusCode);
             Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
+        }
+
+        public static void PrintDir() {
+            var id = GetFolder(AccesToken, "librarian://Main/Charlie" /*Destination: Will need to be changed*/).Result.Id;
+
+            var result = DisplayFolderDir(id, AccessToken).Result;
+            if (result == null)
+            {
+                Console.WriteLine("Wawfawe");
+            }
+            //temporary method to display dir
+            var folder = result.Folder;
+            Console.WriteLine(folder.Name);
+            for (int i = 0; i < result.Subfolders.Count; i++)
+            {
+                Console.WriteLine("\tFolder: " + result.Subfolders[i].Name);
+            }
+            for (int i = 0; i < result.Files.Count; i++)
+            {
+                Console.WriteLine("\tFile: " + result.Files[i].Name);
+            }
+
+        }
+
+        // Method to Extract URI from Access Token
+        static string ExtractDataCenterURI(string accessToken)
+        {
+            DecodedToken decodedToken = AccessTokenDecoder.Decode(accessToken);
+
+            if (decodedToken.Payload.ContainsKey(DataCenterClaim))
+                return decodedToken.Payload[AccessTokenDecoder.DataCenterClaim] as string;
+            throw new Exception("DataCenterURI missing");
+
+        }
+        static async Task<Items> DisplayFolderDir(string folderId, TokenInfo accessToken)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+
+            var itemsRequest = new ItemsRequest()
+            {
+                FoldersLimit = 100,        // Read folders in batches of 100.
+                FilesLimit = 100,        // Read files in batches of 100.
+                FoldersSkip = 0,        // The first read of the folder starts at the beginning.
+                FilesSkip = 0,            // The first read of the files starts at the beginning.
+                IncludeHidden = false,    // Do not include hidden folders or files.
+                IncludeDeleted = false    // Do not include deleted folders or files.
+            };
+
+            FolderNoChildren targetFolder = null;
+            var files = new List<Models.File>();
+            var subfolders = new List<FolderNoChildren>();
+            do
+            {
+
+                HttpRequestMessage request = new HttpRequestMessage
+                {
+                    RequestUri = new Uri($"https://am1.development.bartendercloud.com/api/librarian/items/{folderId}"),
+                    Content = new StringContent(JsonConvert.SerializeObject(itemsRequest), Encoding.UTF8, "application/json"),
+                    Method = HttpMethod.Post
+                };
+
+                HttpResponseMessage msg = await client.SendAsync(request);
+
+                if (msg.IsSuccessStatusCode)
+                {
+
+                    {
+                        var items = JsonConvert.DeserializeObject<Items>(await msg.Content.ReadAsStringAsync());
+
+                        targetFolder = items.Folder;
+                        files.AddRange(items.Files);
+                        subfolders.AddRange(items.Subfolders);
+
+                        if (items.MoreItemsToGet)
+                            itemsRequest = items.NextItemsRequest;
+                        else
+                            Console.WriteLine(items.Subfolders[0].Name);
+                        return items;       // All files and subfolders have been retrieved.
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Unable to query items: {msg.StatusCode}");
+
+                }
+            } while (true);
+        }
+        static async Task<Folder> GetFolder(TokenInfo accessToken, string dest)
+        {
+
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+            string folder_name = dest;
+            string folderPath = HttpUtility.UrlEncode(folder_name); // Encodes folder name to usable format
+            // Get folders, including those that are marked as hidden.
+            try
+            {
+                HttpResponseMessage msg = await client.GetAsync($"https://am1.development.bartendercloud.com/api/librarian/folders/path/{folderPath}/properties"); // tries to access cloud using get method
+                if (msg.IsSuccessStatusCode) // if it can connect
+                {
+                    var response = await msg.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Folder>(response);
+                }
+                else
+                { // if for some reason something is wrong with msg, throw error
+
+                    throw new Exception(msg.ReasonPhrase);
+                }
+            }
+            catch (Exception)
+            { // throws the error given above (msg.ReasonPhrase)
+
+                return null;
+
+
+            }
         }
     }
 
