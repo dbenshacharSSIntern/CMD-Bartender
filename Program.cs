@@ -17,7 +17,7 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
-            try
+        try
             {
                 GlobalConfigManager.initialize();
                 CommandArgs CMD = ParseArgs(args);

@@ -2,7 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-      "commandLineArgs": "config\r\nusername\r\ndsafasdf"
+      "commandLineArgs": "config\r\nusername\r\nabc"
     }
   }
 }

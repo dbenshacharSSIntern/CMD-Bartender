@@ -30,7 +30,7 @@ namespace PasswordBasedAuthLogon
                 ApplicationID = RetriveApplicationID();
                 SecretID = RetriveSecretID();
                 configFileExists = true;
-            } catch (Exception ex)
+            } catch
             {
                 Console.WriteLine("Warning: Config file not found for user and may not contain correct information.");
             }
