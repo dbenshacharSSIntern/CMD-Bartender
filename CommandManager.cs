@@ -17,6 +17,15 @@ namespace BasicAuthLogon
                 return DirCommand.Run(args);
             }
 
+            if (Command == "cd" && isHelp)
+            {
+                return CDCommand.Help();
+            }
+            if (Command == "cd")
+            {
+                return CDCommand.Run(args);
+            }
+
             if (Command == "config" && isHelp)
             {
                 return ConfigCommand.Help();
@@ -30,7 +39,8 @@ namespace BasicAuthLogon
             {
                 return "Here is a list of available commands:\n" +
                     "dir\n" +
-                    "config\n";
+                    "config\n" +
+                    "cd";
             }
 
             throw new ArgumentException("Command does not exist.");
@@ -41,6 +51,19 @@ namespace BasicAuthLogon
         public static string Help()
         {
             return "Run this command to see any files or folders in the current subdirectory";
+        }
+
+        public static string Run(string[] args)
+        {
+            return "";
+        }
+    }
+
+    static class CDCommand
+    {
+        public static string Help()
+        {
+            return "Run this to enter a subdirectory.";
         }
 
         public static string Run(string[] args)
