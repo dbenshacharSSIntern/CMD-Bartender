@@ -8,6 +8,15 @@ namespace BasicAuthLogon
         {
         public static string Run(String Command, bool isHelp, String[] args)
         {
+            if (Command == "return" && isHelp)
+            {
+                return ReturnCommand.Help();
+            }
+            if (Command == "return")
+            {
+                return ReturnCommand.Run(args);
+            }
+
             if (Command == "dir" && isHelp)
             {
                 return DirCommand.Help();
@@ -57,6 +66,20 @@ namespace BasicAuthLogon
         {
             BartenderManager.Initalize();
             return "";
+        }
+    }
+
+    static class ReturnCommand
+    {
+        public static string Help()
+        {
+            return "Run this to restart from the beginning path of bartender.";
+        }
+
+        public static string Run(string[] args)
+        {
+            GlobalConfigManager.ChangeGlobalDirectory("");
+            return "Successfully returned to main.";
         }
     }
 
