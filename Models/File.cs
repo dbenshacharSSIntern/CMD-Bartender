@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Barrista.Models;
+using Newtonsoft.Json.Converters;
 namespace Barrista.Models
 {
     public class File : AbstractItemExtended
