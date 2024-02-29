@@ -17,6 +17,15 @@ namespace BasicAuthLogon
                 return ReturnCommand.Run(args);
             }
 
+            if (Command == "status" && isHelp)
+            {
+                return StatusCommand.Help();
+            }
+            if (Command == "status")
+            {
+                return StatusCommand.Run(args);
+            }
+
             if (Command == "dir" && isHelp)
             {
                 return DirCommand.Help();
@@ -49,7 +58,9 @@ namespace BasicAuthLogon
                 return "Here is a list of available commands:\n" +
                     "dir\n" +
                     "config\n" +
-                    "cd";
+                    "cd\n" +
+                    "return\n" +
+                    "status";
             }
 
             throw new ArgumentException("Command does not exist.");
@@ -87,6 +98,23 @@ namespace BasicAuthLogon
         }
     }
 
+    static class StatusCommand
+    {
+        public static string Help()
+        {
+            return "Run this to find current path in bartender.";
+        }
+
+        public static string Run(string[] args)
+        {
+            if (args.Length > 0)
+            {
+                throw new ArgumentException("No arguments are needed for status command.");
+            }
+            return GlobalConfigManager.GetDirectoryEntry();
+        }
+    }
+
     static class CDCommand
     {
         public static string Help()
@@ -101,11 +129,17 @@ namespace BasicAuthLogon
                 throw new ArgumentException("Only one argument is needed for cd command.");
             }
             var pathModification = args[0];
-            if (pathModification != "..")
+            if (pathModification == "..")
             {
-                pathModification = GlobalConfigManager.GetDirectory().Substring(0, GlobalConfigManager.GetDirectory().LastIndexOf("/"));
+                var lastIndex = GlobalConfigManager.GetDirectory().LastIndexOf("/");
+                lastIndex = Math.Max(0, lastIndex);
+                pathModification = GlobalConfigManager.GetDirectory().Substring(0, lastIndex);
+                GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             }
-            GlobalConfigManager.ChangeGlobalDirectory(pathModification);
+            else
+            {
+                GlobalConfigManager.ChangeGlobalDirectory($"{GlobalConfigManager.GetDirectory()}/{pathModification}");
+            }
             BartenderManager.Initalize();
             return BartenderManager.TestDir().Result;
         }
