@@ -55,6 +55,7 @@ namespace BasicAuthLogon
 
         public static string Run(string[] args)
         {
+            BartenderManager.Initalize();
             return "";
         }
     }
@@ -68,6 +69,7 @@ namespace BasicAuthLogon
 
         public static string Run(string[] args)
         {
+            BartenderManager.Initalize();
             return "";
         }
     }

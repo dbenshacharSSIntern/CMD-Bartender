@@ -24,16 +24,17 @@ namespace PasswordBasedAuthLogon
 
         public static void Initialize() 
         {
-            try
+            if (!File.Exists(ConfigPath))
             {
-                ConfigReader = File.ReadAllLines(ConfigPath);
-            } catch {
-                File.Create(ConfigPath);
+                CreateConfigFile();
             }
+
+            ConfigReader = File.ReadAllLines(ConfigPath);
+
             try
             {
                 while (ConfigReader.Length < 6) {
-                    ConfigReader.Append("\n");
+                    ConfigReader = ConfigReader.Append("\n").ToArray<string>();
                 }
 
                 Username = RetriveUsername();
