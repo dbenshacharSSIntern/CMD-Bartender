@@ -201,7 +201,7 @@ namespace PasswordBasedAuthLogon
 
         public static void CreateConfigFile()
         {
-            File.WriteAllLines(GetConfigPath(), new string[5]);
+            File.WriteAllLines(GetConfigPath(), new string[6]);
             Initialize();
         }
 
