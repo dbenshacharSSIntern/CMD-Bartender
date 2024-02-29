@@ -58,7 +58,7 @@ namespace BasicAuthLogon
         public CommandArgs(string command)
         {
             Command = command;
-            Args = new string[] { "help"};
+            Args = new string[] { };
         }
 
         public string Run()
