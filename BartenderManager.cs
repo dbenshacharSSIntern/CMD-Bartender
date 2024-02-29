@@ -14,6 +14,7 @@ using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace BasicAuthLogon
 {
@@ -37,28 +38,6 @@ namespace BasicAuthLogon
             }
         }
 
-        public static void PrintDir() {
-            var id = GetFolder(AccessToken, GlobalConfigManager.GetDirectoryEntry()).Result.Id;
-
-            var result = DisplayFolderDir(id, AccessToken).Result;
-            if (result == null)
-            {
-                Console.WriteLine("Wawfawe");
-            }
-            //temporary method to display dir
-            var folder = result.Folder;
-            Console.WriteLine(folder.Name);
-            for (int i = 0; i < result.Subfolders.Count; i++)
-            {
-                Console.WriteLine("\tFolder: " + result.Subfolders[i].Name);
-            }
-            for (int i = 0; i < result.Files.Count; i++)
-            {
-                Console.WriteLine("\tFile: " + result.Files[i].Name);
-            }
-
-        }
-
         // Method to Extract URI from Access Token
         static string ExtractDataCenterURI(string accessToken)
         {
@@ -69,8 +48,25 @@ namespace BasicAuthLogon
             throw new Exception("DataCenterURI missing");
 
         }
-        static async Task<Items> DisplayFolderDir(string folderId, TokenInfo accessToken)
+        static async Task<String> DisplayFolderDir(string folderName, TokenInfo accessToken)
         {
+            String folderId = "";
+            try
+            {
+                folderId = GetFolder(accessToken, folderName).Result.Id;
+            }
+            catch (AggregateException ae)
+            {
+                foreach (Exception ex in ae.InnerExceptions)
+                {
+                    if (ex is ArgumentException)
+                    {
+                        return (ex.Message);
+                    }
+                }
+            }
+
+            String dirs = "";
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
 
@@ -92,7 +88,7 @@ namespace BasicAuthLogon
 
                 HttpRequestMessage request = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"{GlobalConfigManager.GetWebsite()}{folderId}"),
+                    RequestUri = new Uri($"https://am1.development.bartendercloud.com/api/librarian/items/{folderId}"),
                     Content = new StringContent(JsonConvert.SerializeObject(itemsRequest), Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post
                 };
@@ -112,8 +108,19 @@ namespace BasicAuthLogon
                         if (items.MoreItemsToGet)
                             itemsRequest = items.NextItemsRequest;
                         else
-                            Console.WriteLine(items.Subfolders[0].Name);
-                        return items;       // All files and subfolders have been retrieved.
+                        {
+                            dirs += "Base Folder: " + targetFolder.Name + "\n";
+                            for (int i = 0; i < subfolders.Count; i++)
+                            {
+                                dirs += "\tFolder: " + subfolders[i].Name + "\n";
+                            }
+                            for (int i = 0; i < files.Count; i++)
+                            {
+                                dirs += "\tFile: " + files[i].Name + "\n";
+                            }
+                            return dirs;       // All files and subfolders have been retrieved.
+
+                        }
                     }
                 }
                 else
@@ -122,6 +129,7 @@ namespace BasicAuthLogon
 
                 }
             } while (true);
+
         }
 
         public static async Task<string> TestDir()
