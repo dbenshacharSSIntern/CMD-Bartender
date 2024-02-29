@@ -10,6 +10,7 @@ using static BasicAuthLogon.AccessTokenDecoder;
 using System.Threading.Tasks;
 using System.Text;
 using System.Web;
+using System.Collections.Immutable;
 
 namespace BasicAuthLogon
 {
@@ -34,7 +35,7 @@ namespace BasicAuthLogon
         }
 
         public static void PrintDir() {
-            var id = GetFolder(AccessToken, "librarian://Main/Charlie" /*Destination: Will need to be changed*/).Result.Id;
+            var id = GetFolder(AccessToken, GlobalConfigManager.GetDirectoryEntry()).Result.Id;
 
             var result = DisplayFolderDir(id, AccessToken).Result;
             if (result == null)

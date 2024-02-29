@@ -140,6 +140,11 @@ namespace PasswordBasedAuthLogon
             return Directory;
         }
 
+        public static string GetDirectoryEntry()
+        {
+            return "librarian://Main/" + GetDirectory();
+        }
+
         private static void SetDirectory(string value)
         {
             Directory = value;
