@@ -31,7 +31,7 @@ namespace BasicAuthLogon
             {
                 Client.BaseAddress = URI;
                 HttpResponseMessage code = Client.GetAsync(Website).Result;
-                AccessToken = Application.GetToken(code.StatusCode);
+                AccessToken = Application.GetToken();
                 Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
             } catch {
                 throw new Exception("Website connection failed.");
@@ -53,7 +53,7 @@ namespace BasicAuthLogon
             String folderId = "";
             try
             {
-                folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
+               folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
             }
             catch (AggregateException ae)
             {
@@ -199,7 +199,7 @@ namespace BasicAuthLogon
     {
         public static string ClaimsIssuer { get; set; } = string.Empty;
 
-        public TokenInfo GetToken(HttpStatusCode code)
+        public TokenInfo GetToken()
         {
             TokenInfo token = null;
 
@@ -209,7 +209,7 @@ namespace BasicAuthLogon
             string password = GlobalConfigManager.GetPassword();
 
             HttpClient client = new HttpClient();
-            Uri uri = new Uri(ClaimsIssuer);
+            Uri uri = new Uri(GlobalConfigManager.GetWebsite());
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.BaseAddress = uri;
             var contentBodyList = new List<KeyValuePair<string, string>>();
@@ -224,7 +224,6 @@ namespace BasicAuthLogon
             var request = new HttpRequestMessage(HttpMethod.Post, "oauth/token") { Content = new FormUrlEncodedContent(contentBodyList) };
             HttpResponseMessage msg = client.SendAsync(request).Result;
 
-            code = msg.StatusCode;
             if (msg.IsSuccessStatusCode)
             {
                 var resultPayload = msg.Content.ReadAsStringAsync().Result;
