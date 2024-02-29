@@ -88,7 +88,7 @@ namespace BasicAuthLogon
 
                 HttpRequestMessage request = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"https://am1.development.bartendercloud.com/api/librarian/items/{folderId}"),
+                    RequestUri = new Uri($"{GlobalConfigManager.GetWebsite()}{folderId}"),
                     Content = new StringContent(JsonConvert.SerializeObject(itemsRequest), Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post
                 };
@@ -163,7 +163,7 @@ namespace BasicAuthLogon
             // Get folders, including those that are marked as hidden.
             try
             {
-                HttpResponseMessage msg = await client.GetAsync($"https://am1.development.bartendercloud.com/api/librarian/folders/path/{folderPath}/properties"); // tries to access cloud using get method
+                HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}{folderPath}/properties"); // tries to access cloud using get method
                 if (msg.IsSuccessStatusCode) // if it can connect
                 {
                     var response = await msg.Content.ReadAsStringAsync();
