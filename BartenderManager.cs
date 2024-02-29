@@ -203,76 +203,10 @@ namespace BasicAuthLogon
         {
             TokenInfo token = null;
 
-            Console.WriteLine("Please enter information about an Native application created\nwith grant_type:\"password refresh_token\"\n");
-
-            string clientId;     // BarTenderCloud app client-id
-            string clientSecret; // BarTenderCloud app client-secret
-            string username;
-            string password;
-
-            do
-            {
-                // 
-                Console.Write("BarTenderCloud Cluster (e.g. https://am1.bartendercloud.com) : ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    try
-                    {
-                        RetrieveAuthenticationConfiguration(input);
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Unable to retrieve OIDC document. Ex={ex.Message}");
-                        continue;
-                    }
-                }
-            } while (true);
-
-            do
-            {
-                Console.Write("Application Client Id: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    clientId = input;
-                    break;
-                }
-            } while (true);
-
-            do
-            {
-                Console.Write("Application Client Secret: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    clientSecret = input;
-                    break;
-                }
-            } while (true);
-
-            do
-            {
-                Console.Write("Username: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    username = input;
-                    break;
-                }
-            } while (true);
-
-            do
-            {
-                Console.Write("Password: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    password = input;
-                    break;
-                }
-            } while (true);
+            string clientId = GlobalConfigManager.GetApplicationID();     // BarTenderCloud app client-id
+            string clientSecret = GlobalConfigManager.GetSecretID(); // BarTenderCloud app client-secret
+            string username = GlobalConfigManager.GetUsername() ;
+            string password = GlobalConfigManager.GetPassword();
 
             HttpClient client = new HttpClient();
             Uri uri = new Uri(ClaimsIssuer);
