@@ -9,6 +9,7 @@ using System.Net.Http;
 using static BasicAuthLogon.AccessTokenDecoder;
 using System.Threading.Tasks;
 using System.Text;
+using System.Web;
 
 namespace BasicAuthLogon
 {

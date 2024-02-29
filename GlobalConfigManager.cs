@@ -27,6 +27,11 @@ namespace PasswordBasedAuthLogon
             try
             {
                 ConfigReader = File.ReadAllLines(ConfigPath);
+            } catch {
+                File.Create(ConfigPath);
+            }
+            try
+            {
                 while (ConfigReader.Length < 6) {
                     ConfigReader.Append("\n");
                 }
@@ -40,7 +45,6 @@ namespace PasswordBasedAuthLogon
                 configFileExists = true;
             } catch
             {
-                ConfigReader = File.ReadAllLines(ConfigPath);
                 Console.WriteLine("Warning: Config file not found for user and may not contain correct information.");
             }
         }

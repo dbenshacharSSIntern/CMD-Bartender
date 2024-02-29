@@ -1,5 +1,4 @@
-﻿using BasicAuthLogon.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PasswordBasedAuthLogon;
 using System;
 using System.Collections.Generic;
