@@ -15,6 +15,7 @@ using System.Linq.Expressions;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
+using System.IO;
 
 namespace BasicAuthLogon
 {
@@ -199,80 +200,52 @@ namespace BasicAuthLogon
     {
         public static string ClaimsIssuer { get; set; } = string.Empty;
 
-        public TokenInfo GetToken(HttpStatusCode code)
+        public TokenInfo GetToken(out HttpStatusCode code)
         {
             TokenInfo token = null;
 
-            Console.WriteLine("Please enter information about an Native application created\nwith grant_type:\"password refresh_token\"\n");
+            // Instantiating all the necessary values
+            string website = " ";
+            string clientId = " ";     // BarTenderCloud app client-id
+            string clientSecret = " "; // BarTenderCloud app client-secret
+            string username = " ";
+            string password = " ";
+            int counter = 0;
+            string config_dir = System.IO.Directory.GetCurrentDirectory() + "\\config.txt";
 
-            string clientId;     // BarTenderCloud app client-id
-            string clientSecret; // BarTenderCloud app client-secret
-            string username;
-            string password;
-
-            do
+            // Hardcoding values
+            List<string> values = new List<string> { website, clientId, clientSecret, username, password };
+            if (System.IO.File.ReadAllLines(config_dir).Length != 5)
             {
-                // 
-                Console.Write("BarTenderCloud Cluster (e.g. https://am1.bartendercloud.com) : ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    try
-                    {
-                        RetrieveAuthenticationConfiguration(input);
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Unable to retrieve OIDC document. Ex={ex.Message}");
-                        continue;
-                    }
-                }
-            } while (true);
-
-            do
+                Console.WriteLine("Your config file is formatted improperly.\n" +
+                    "config.txt should include the: website URL, App ID, App Secret, username, and password \n" +
+                    " website: https://am1.development.bartendercloud.com\n id: 1AxfZCJkQICmYFvrKOSGcITw5E9qRlln\n" +
+                    " secret: Zkk6P3DVMSrb4aNoIePMxKOUemz8KV8EoPYN3-Aac4vSdTz9CaL15HNue2WlinS_\n username: ohanley@seagullscientific.com\n password: Password123$\n" +
+                    "If you haven't registered the app, go to Manage Cloud Account > BarTender Cloud API > Register for Application for Password Based Access");
+                System.Environment.Exit(0);
+            }
+            if (System.IO.File.Exists(config_dir))
             {
-                Console.Write("Application Client Id: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    clientId = input;
-                    break;
-                }
-            } while (true);
+                StreamReader stream = new StreamReader(config_dir); // finds the config file
+                website = stream.ReadLine().Split(" ")[1];
+                clientId = stream.ReadLine().Split(" ")[1];
+                clientSecret = stream.ReadLine().Split(" ")[1];
+                username = stream.ReadLine().Split(" ")[1];
+                password = stream.ReadLine().Split(" ")[1];
+                RetrieveAuthenticationConfiguration(website);
+            }
 
-            do
+            else
             {
-                Console.Write("Application Client Secret: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    clientSecret = input;
-                    break;
-                }
-            } while (true);
+                Console.WriteLine("Config File directory is invald. Make sure it is in the following directory: \n" +
+                    "C:\\Users\\[User]\\...\\CloudUploader\\bin\\Debug\\net6.0\\config.txt");
+                System.Environment.Exit(0);
+            }
+            // Assigning each line value to the respective variable
 
-            do
-            {
-                Console.Write("Username: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    username = input;
-                    break;
-                }
-            } while (true);
 
-            do
-            {
-                Console.Write("Password: ");
-                string input = Console.ReadLine();
-                if (!string.IsNullOrEmpty(input))
-                {
-                    password = input;
-                    break;
-                }
-            } while (true);
+
+
 
             HttpClient client = new HttpClient();
             Uri uri = new Uri(ClaimsIssuer);
@@ -287,9 +260,11 @@ namespace BasicAuthLogon
             contentBodyList.Add(new KeyValuePair<string, string>("audience", "https://BarTenderCloudServiceApi"));
             contentBodyList.Add(new KeyValuePair<string, string>("scope", "openid profile user:query offline_access"));
 
+
             var request = new HttpRequestMessage(HttpMethod.Post, "oauth/token") { Content = new FormUrlEncodedContent(contentBodyList) };
             HttpResponseMessage msg = client.SendAsync(request).Result;
 
+            // Returns token
             code = msg.StatusCode;
             if (msg.IsSuccessStatusCode)
             {
@@ -300,6 +275,7 @@ namespace BasicAuthLogon
             return token;
         }
 
+        // Authenticates URI
         static void RetrieveAuthenticationConfiguration(string barTenderCloudCluster)
         {
             HttpClient httpClient = new HttpClient();
@@ -313,12 +289,14 @@ namespace BasicAuthLogon
             var i = (string)dictionary["issuer"];
             ClaimsIssuer = i.EndsWith('/') ? i.TrimEnd(new char[] { '/' }) : i;
         }
-    }
 
-    /// <summary>
-    /// Decode an access token
-    /// </summary>
-    internal static class AccessTokenDecoder
+    }
+}
+
+/// <summary>
+/// Decode an access token
+/// </summary>
+internal static class AccessTokenDecoder
     {
         public static string TenantIDClaim = "https://BarTenderCloud.com/TenantID";
         public static string UserIDClaim = "https://BarTenderCloud.com/UserID";
