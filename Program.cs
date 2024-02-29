@@ -32,11 +32,11 @@ namespace BasicAuthLogon
         static CommandArgs ParseArgs(string[] args)
         {
             CommandArgs CMD;
-            if (args.Length < 1)
+            if (args.Length == 0)
             {
-                throw new ArgumentException("1 or more arguments must be passed to program");
+                CMD = new CommandArgs(null);
             }
-            if (args.Length == 1) {
+            else if (args.Length == 1) {
                 CMD = new CommandArgs(args[0]);
             } else
             {

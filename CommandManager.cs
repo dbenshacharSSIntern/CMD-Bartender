@@ -139,10 +139,13 @@ namespace BasicAuthLogon
             }
             else
             {
-                GlobalConfigManager.ChangeGlobalDirectory($"{GlobalConfigManager.GetDirectory()}/{pathModification}");
+                pathModification = $"{GlobalConfigManager.GetDirectory()}/{pathModification}";
             }
             BartenderManager.Initalize();
-            return BartenderManager.TestDir().Result;
+            var result = BartenderManager.TestDir().Result;
+
+            GlobalConfigManager.ChangeGlobalDirectory(pathModification);
+            return result;
         }
     }
 
