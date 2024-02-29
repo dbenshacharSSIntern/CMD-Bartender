@@ -76,8 +76,8 @@ namespace BasicAuthLogon
         public static string Run(string[] args)
         {
             BartenderManager.Initalize();
-            BartenderManager.DisplayFolderDir(args[0], args[1]);// cloud path [0], accessToken (as string) [1]
-            return "";
+            var result = BartenderManager.DisplayFolderDir(args[0], args[1]).Result;// cloud path [0], accessToken (as string) [1]
+            return result;
         }
     }
 
