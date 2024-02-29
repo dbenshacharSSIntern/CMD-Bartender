@@ -48,12 +48,12 @@ namespace BasicAuthLogon
             throw new Exception("DataCenterURI missing");
 
         }
-        public static async Task<String> DisplayFolderDir(string folderName, String accessToken)
+        public static async Task<String> DisplayFolderDir(string folderName)
         {
             String folderId = "";
             try
             {
-                folderId = GetFolder(accessToken, folderName).Result.Id;
+                folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
             }
             catch (AggregateException ae)
             {
@@ -68,7 +68,7 @@ namespace BasicAuthLogon
 
             String dirs = "";
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
 
             var itemsRequest = new ItemsRequest()
             {

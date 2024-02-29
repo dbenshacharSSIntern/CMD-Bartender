@@ -70,14 +70,17 @@ namespace BasicAuthLogon
     {
         public static string Help()
         {
-            return "Run this command to see any files or folders in the current subdirectory";
+            return "Run this command to see any files or folders in the current subdirectory.";
         }
 
         public static string Run(string[] args)
         {
+            if (args.Length > 0)
+            {
+                throw new ArgumentException("No arguments are needed for dir command.");
+            }
             BartenderManager.Initalize();
-            var result = BartenderManager.DisplayFolderDir(args[0], args[1]).Result;// cloud path [0], accessToken (as string) [1]
-            return result;
+            return BartenderManager.DisplayFolderDir(GlobalConfigManager.GetDirectoryEntry()).Result;
         }
     }
 
