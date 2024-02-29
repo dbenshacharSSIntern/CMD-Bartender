@@ -1,1 +1,1 @@
-C:\"Program Files (x86)"\Barrista\Barrista\bin\Debug\net6.0\barrista.exe %*
+C:\Users\i-pso\source\repos\CMD-Bartender\bin\Debug\net6.0\barrista.exe %*

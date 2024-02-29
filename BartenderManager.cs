@@ -48,7 +48,7 @@ namespace BasicAuthLogon
             throw new Exception("DataCenterURI missing");
 
         }
-        static async Task<String> DisplayFolderDir(string folderName, TokenInfo accessToken)
+        public static async Task<String> DisplayFolderDir(string folderName, String accessToken)
         {
             String folderId = "";
             try
@@ -68,7 +68,7 @@ namespace BasicAuthLogon
 
             String dirs = "";
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             var itemsRequest = new ItemsRequest()
             {
@@ -153,11 +153,11 @@ namespace BasicAuthLogon
             }
         }
 
-        static async Task<Folder> GetFolder(TokenInfo accessToken, string dest)
+        static async Task<Folder> GetFolder(String accessToken, string dest)
         {
 
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
             string folder_name = dest;
             string folderPath = HttpUtility.UrlEncode(folder_name); // Encodes folder name to usable format
             // Get folders, including those that are marked as hidden.
