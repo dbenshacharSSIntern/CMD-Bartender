@@ -34,7 +34,7 @@ namespace PasswordBasedAuthLogon
             try
             {
                 while (ConfigReader.Length < 6) {
-                    ConfigReader = ConfigReader.Append("\n").ToArray<string>();
+                    ConfigReader = ConfigReader.Append("\n").ToArray();
                 }
 
                 Username = RetriveUsername();
