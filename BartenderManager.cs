@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Web;
 using System.Collections.Immutable;
+using System.Linq.Expressions;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace BasicAuthLogon
 {
@@ -89,7 +92,7 @@ namespace BasicAuthLogon
 
                 HttpRequestMessage request = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"https://am1.development.bartendercloud.com/api/librarian/items/{folderId}"),
+                    RequestUri = new Uri($"{GlobalConfigManager.GetWebsite()}{folderId}"),
                     Content = new StringContent(JsonConvert.SerializeObject(itemsRequest), Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post
                 };
@@ -120,6 +123,28 @@ namespace BasicAuthLogon
                 }
             } while (true);
         }
+
+        public static async Task<string> TestDir()
+        {
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            string folderName = GlobalConfigManager.GetDirectoryEntry();
+            string folderPath = HttpUtility.UrlEncode(folderName);
+
+            try
+            {
+                var msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}{folderPath}/properties\"");
+                if (msg.IsSuccessStatusCode)
+                {
+                    throw new ArgumentException("Current path is invalid.");
+                }
+                return "Path validated.";
+            } catch (ArgumentException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         static async Task<Folder> GetFolder(TokenInfo accessToken, string dest)
         {
 

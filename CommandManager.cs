@@ -78,6 +78,10 @@ namespace BasicAuthLogon
 
         public static string Run(string[] args)
         {
+            if (args.Length > 0)
+            {
+                throw new ArgumentException("No arguments are needed for return command.");
+            }
             GlobalConfigManager.ChangeGlobalDirectory("");
             return "Successfully returned to main.";
         }
@@ -92,8 +96,18 @@ namespace BasicAuthLogon
 
         public static string Run(string[] args)
         {
+            if (args.Length > 1)
+            {
+                throw new ArgumentException("Only one argument is needed for cd command.");
+            }
+            var pathModification = args[0];
+            if (pathModification != "..")
+            {
+                pathModification = GlobalConfigManager.GetDirectory().Substring(0, GlobalConfigManager.GetDirectory().LastIndexOf("/"));
+            }
+            GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             BartenderManager.Initalize();
-            return "";
+            return BartenderManager.TestDir().Result;
         }
     }
 
