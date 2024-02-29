@@ -82,7 +82,8 @@ namespace BasicAuthLogon
                 "config username {NewUserName}\n" +
                 "config password {NewPassword}\n" +
                 "config appID {NewApplicationID}\n" +
-                "config secretID {NewSecretID}\n";
+                "config secretID {NewSecretID}\n" +
+                "config website {NewWebsite}\n";
         }
 
         public static string Run(string[] args)
@@ -114,6 +115,11 @@ namespace BasicAuthLogon
             {
                 GlobalConfigManager.ChangeGlobalSecretID(args[1]);
                 return "secretID changed succesfully";
+            }
+            else if (args[0] == "website")
+            {
+                GlobalConfigManager.ChangeGlobalWebsite(args[1]);
+                return "website changed succesfully";
             }
             throw new ArgumentException(args[0] + " is not an aspect of command config.");
         }
