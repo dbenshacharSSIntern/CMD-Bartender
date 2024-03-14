@@ -27,15 +27,16 @@ namespace BasicAuthLogon
         private static Uri URI = new Uri(Website);
 
         public static void Initalize() {
-            try
+            Client.BaseAddress = URI;
+            HttpResponseMessage code = Client.GetAsync(Website).Result;
+            AccessToken = Application.GetToken();
+            Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
+/*            try
             {
-                Client.BaseAddress = URI;
-                HttpResponseMessage code = Client.GetAsync(Website).Result;
-                AccessToken = Application.GetToken();
-                Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken}");
-            } catch {
+;
+            } catch {   
                 throw new Exception("Website connection failed.");
-            }
+            }*/
         }
 
         // Method to Extract URI from Access Token

@@ -80,6 +80,7 @@ namespace BasicAuthLogon
                 throw new ArgumentException("No arguments are needed for dir command.");
             }
             BartenderManager.Initalize();
+           
             return BartenderManager.DisplayFolderDir(GlobalConfigManager.GetDirectoryEntry()).Result;
         }
     }
