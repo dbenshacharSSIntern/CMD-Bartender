@@ -75,7 +75,7 @@ namespace BasicAuthLogon
             }
 
             throw new ArgumentException("Command does not exist.");
-        }
+            }
     }
     static class DirCommand
     {
@@ -111,9 +111,9 @@ namespace BasicAuthLogon
             }
             BartenderManager.Initalize();
             string targetFile = args[0];
-            if (targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
+            if (!targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
             {
-                targetFile = targetFile.Substring(GlobalConfigManager.GetDirectoryEntry().Length);
+                targetFile = GlobalConfigManager.GetDirectoryEntry() + targetFile;
             }
 
             return BartenderManager.CloudDelete(targetFile).Result;
@@ -136,9 +136,9 @@ namespace BasicAuthLogon
             GlobalConfigManager.ChangeGlobalDirectory("");
 
             BartenderManager.Initalize();
-            var result = BartenderManager.TestDir().Result;
+            var result = BartenderManager.TestDir(GlobalConfigManager.GetDirectoryEntry());
 
-            return result;
+            return result.Message;
         }
     }
 
@@ -185,10 +185,13 @@ namespace BasicAuthLogon
                 pathModification = $"{GlobalConfigManager.GetDirectory()}{pathModification}/";
             }
             BartenderManager.Initalize();
-            var result = BartenderManager.TestDir().Result;
+            var result = BartenderManager.TestDir(pathModification);
 
-            GlobalConfigManager.ChangeGlobalDirectory(pathModification);
-            return result;
+            if (result.Status)
+            {
+                GlobalConfigManager.ChangeGlobalDirectory(pathModification);
+            }
+            return result.Message;
         }
     }
 

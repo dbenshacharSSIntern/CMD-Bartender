@@ -55,7 +55,7 @@ namespace BasicAuthLogon
             String folderId = "";
             try
             {
-               folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
+                folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
             }
             catch (AggregateException ae)
             {
@@ -134,25 +134,28 @@ namespace BasicAuthLogon
 
         }
 
-        public static async Task<string> TestDir()
+        internal class ValidationResult { public string Message { get; set; } public bool Status { get; set; } }
+
+        public static ValidationResult TestDir(string folderName)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
-            string folderName = GlobalConfigManager.GetDirectoryEntry();
             string folderPath = HttpUtility.UrlEncode(folderName);
+            ValidationResult result = new();
 
             try
             {
-                var msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/items/{folderPath}/properties");
-                if (msg.IsSuccessStatusCode)
-                {
-                    throw new ArgumentException("Current path is invalid.");
-                }
-                return "Path validated.";
-            } catch (ArgumentException ex)
-            {
-                return ex.Message;
+                string abc = GetFolder(AccessToken.access_token, folderName).Result.Id;
+                result.Message = "Path validated";
+                result.Status = true;
             }
+            catch (ArgumentException ex)
+            {
+                result.Message = ex.Message;
+                result.Status = false;
+            }
+
+            return result;
         }
 
         static async Task<Folder> GetFolder(String accessToken, string dest)
