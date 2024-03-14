@@ -147,7 +147,7 @@ namespace BasicAuthLogon
             }
             else
             {
-                pathModification = $"{GlobalConfigManager.GetDirectory()}/{pathModification}";
+                pathModification = $"{GlobalConfigManager.GetDirectory()}{pathModification}/";
             }
             BartenderManager.Initalize();
             var result = BartenderManager.TestDir().Result;

@@ -165,7 +165,8 @@ namespace BasicAuthLogon
             // Get folders, including those that are marked as hidden.
             try
             {
-                HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{folderPath}/properties"); // tries to access cloud using get method
+                var requestURI = $"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{folderPath}/properties";
+                HttpResponseMessage msg = await client.GetAsync(requestURI); // tries to access cloud using get method
                 if (msg.IsSuccessStatusCode) // if it can connect
                 {
                     var response = await msg.Content.ReadAsStringAsync();
