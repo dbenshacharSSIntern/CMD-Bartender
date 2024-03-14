@@ -208,8 +208,10 @@ namespace BasicAuthLogon
             string username = GlobalConfigManager.GetUsername() ;
             string password = GlobalConfigManager.GetPassword();
 
+            RetrieveAuthenticationConfiguration(GlobalConfigManager.GetWebsite());
+
             HttpClient client = new HttpClient();
-            Uri uri = new Uri(GlobalConfigManager.GetWebsite());
+            Uri uri = new Uri(ClaimsIssuer);
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.BaseAddress = uri;
             var contentBodyList = new List<KeyValuePair<string, string>>();
