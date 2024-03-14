@@ -34,6 +34,7 @@ namespace BasicAuthLogon
 /*            try
             {
 ;
+;
             } catch {   
                 throw new Exception("Website connection failed.");
             }*/
@@ -201,8 +202,8 @@ namespace BasicAuthLogon
         public static string ClaimsIssuer { get; set; } = string.Empty;
 
         public TokenInfo GetToken()
-        {
-            TokenInfo token = null;
+            {
+                TokenInfo token = null;
 
             string clientId = GlobalConfigManager.GetApplicationID();     // BarTenderCloud app client-id
             string clientSecret = GlobalConfigManager.GetSecretID(); // BarTenderCloud app client-secret
