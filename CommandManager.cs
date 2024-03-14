@@ -107,11 +107,16 @@ namespace BasicAuthLogon
         {
             if (args.Length != 1)
             {
-                throw new ArgumentException("Only the target file name is needed for deletion.");
+                throw new ArgumentException("Only the target file name or path is needed for deletion.");
             }
             BartenderManager.Initalize();
+            string targetFile = args[0];
+            if (targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
+            {
+                targetFile = targetFile.Substring(GlobalConfigManager.GetDirectoryEntry().Length);
+            }
 
-            return BartenderManager.CloudDelete(args[0]).Result;
+            return BartenderManager.CloudDelete(targetFile).Result;
         }
     }
 
