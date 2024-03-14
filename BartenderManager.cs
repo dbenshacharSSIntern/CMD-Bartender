@@ -89,7 +89,7 @@ namespace BasicAuthLogon
 
                 HttpRequestMessage request = new HttpRequestMessage
                 {
-                    RequestUri = new Uri($"{GlobalConfigManager.GetWebsite()}{folderId}"),
+                    RequestUri = new Uri($"{GlobalConfigManager.GetWebsite()}/api/librarian/items/{folderId}"),
                     Content = new StringContent(JsonConvert.SerializeObject(itemsRequest), Encoding.UTF8, "application/json"),
                     Method = HttpMethod.Post
                 };
@@ -142,7 +142,7 @@ namespace BasicAuthLogon
 
             try
             {
-                var msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}{folderPath}/properties\"");
+                var msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/items/{folderPath}/properties");
                 if (msg.IsSuccessStatusCode)
                 {
                     throw new ArgumentException("Current path is invalid.");
@@ -164,7 +164,7 @@ namespace BasicAuthLogon
             // Get folders, including those that are marked as hidden.
             try
             {
-                HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}{folderPath}/properties"); // tries to access cloud using get method
+                HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{folderPath}/properties"); // tries to access cloud using get method
                 if (msg.IsSuccessStatusCode) // if it can connect
                 {
                     var response = await msg.Content.ReadAsStringAsync();
@@ -209,8 +209,10 @@ namespace BasicAuthLogon
             string username = GlobalConfigManager.GetUsername() ;
             string password = GlobalConfigManager.GetPassword();
 
+            RetrieveAuthenticationConfiguration(GlobalConfigManager.GetWebsite());
+
             HttpClient client = new HttpClient();
-            Uri uri = new Uri(GlobalConfigManager.GetWebsite());
+            Uri uri = new Uri(ClaimsIssuer);
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.BaseAddress = uri;
             var contentBodyList = new List<KeyValuePair<string, string>>();

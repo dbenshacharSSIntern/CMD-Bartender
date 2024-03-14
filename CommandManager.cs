@@ -99,7 +99,11 @@ namespace BasicAuthLogon
                 throw new ArgumentException("No arguments are needed for return command.");
             }
             GlobalConfigManager.ChangeGlobalDirectory("");
-            return "Successfully returned to main.";
+
+            BartenderManager.Initalize();
+            var result = BartenderManager.TestDir().Result;
+
+            return result;
         }
     }
 
