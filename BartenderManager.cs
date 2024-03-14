@@ -145,7 +145,6 @@ namespace BasicAuthLogon
 
             try
             {
-                string abc = GetFolder(AccessToken.access_token, folderName).Result.Id;
                 result.Message = "Path validated";
                 result.Status = true;
             }
