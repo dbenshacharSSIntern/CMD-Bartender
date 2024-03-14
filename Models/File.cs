@@ -469,4 +469,11 @@ namespace Barrista.Models
         public int Major { get; set; }
         public int Minor { get; set; }
     }
+    public class FileUpdateRequest
+    {
+        /// <summary>
+        /// Specifies a comment for the file update operation.
+        /// </summary>
+        public string Comment { get; set; }
+    }
 }

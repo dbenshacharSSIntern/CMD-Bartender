@@ -186,6 +186,83 @@ namespace BasicAuthLogon
 
             }
         }
+
+        static async Task<String> CloudDelete(string accessToken, string filePath)
+            {
+                // Assume that fileId is the ID of the target file.
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+                string fileId = "";
+                try
+                {
+                    fileId = GetFile(accessToken, filePath).Result.Id;
+                }
+                catch (AggregateException ae)
+                {
+                    foreach (Exception ex in ae.InnerExceptions)
+                    {
+                        if (ex is ArgumentException)
+                        {
+                            Console.WriteLine(ex.Message);
+                            return (ex.Message);
+
+                        }
+                    }
+                }
+
+                var requests = new FileUpdateRequest()
+                {
+                    Comment = "Deleting File"
+                };
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), new Uri($"{GlobalConfigManager.GetWebsite()}/api/librarian/files/{fileId}/delete"))
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(requests), Encoding.UTF8, "application/json")
+                };
+
+                HttpResponseMessage msg = await client.SendAsync(request); //(CODE FOR DELETING FILES)
+                //HttpResponseMessage msg = await client.DeleteAsync($"https://bartendercloud.com/api/librarian/files/{fileId}/purge"); // CODE fo
+
+
+                if (msg.IsSuccessStatusCode)
+                {
+
+                    //return JsonConvert.DeserializeObject<FileChange>(await msg.Content.ReadAsStringAsync());
+                    Console.WriteLine("File deleted!");
+                    return "File was deleted successfully!";
+
+                }
+                else if (msg.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    Console.WriteLine("File doesn't exist to delete");
+                    return "";
+                }
+                else
+                {
+                    Console.WriteLine("Something went wrong, your file couldn't be deleted.");
+                    throw new ArgumentException("Something went wrong, your file couldn't be deleted.");
+                }
+            }
+
+
+
+            static async Task<FileChange> GetFile(String accessToken, string path) {
+                HttpClient client = new HttpClient();
+                string filePath = HttpUtility.UrlEncode(path);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+
+                HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/files/path/{filePath}/properties?versionMajor={1}&versionMinor={0}");
+
+                if (msg.IsSuccessStatusCode)
+                {
+                    var response = await msg.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<FileChange>(response);
+                }
+                else {
+                    throw new ArgumentException("Your file path is not valid. Please input a proper path.\nEx) libraian://Main/Test.txt\nIf you are trying to reach a space, use librarian://[Space Name]/");
+                }
+            }
+
+
     }
 
     class TokenInfo
