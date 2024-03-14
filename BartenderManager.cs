@@ -187,10 +187,11 @@ namespace BasicAuthLogon
             }
         }
 
-        static async Task<String> CloudDelete(string accessToken, string filePath)
+        public static async Task<String> CloudDelete(string filePath)
             {
-                // Assume that fileId is the ID of the target file.
-                HttpClient client = new HttpClient();
+            // Assume that fileId is the ID of the target file.
+            string accessToken = AccessToken.access_token;
+            HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                 string fileId = "";
                 try

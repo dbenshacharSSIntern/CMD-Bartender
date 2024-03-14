@@ -1,5 +1,6 @@
 ﻿using PasswordBasedAuthLogon;
 using System;
+using System.Data.Common;
 using System.Linq;
 
 namespace BasicAuthLogon
@@ -35,6 +36,15 @@ namespace BasicAuthLogon
                 return DirCommand.Run(args);
             }
 
+            if (Command == "del" && isHelp)
+            {
+                return DelCommand.Help();
+            }
+            if (Command == "del")
+            {
+                return DelCommand.Run(args);
+            }
+
             if (Command == "cd" && isHelp)
             {
                 return CDCommand.Help();
@@ -59,6 +69,7 @@ namespace BasicAuthLogon
                     "dir\n" +
                     "config\n" +
                     "cd\n" +
+                    "del\n" +
                     "return\n" +
                     "status";
             }
@@ -82,6 +93,25 @@ namespace BasicAuthLogon
             BartenderManager.Initalize();
            
             return BartenderManager.DisplayFolderDir(GlobalConfigManager.GetDirectoryEntry()).Result;
+        }
+    }
+
+    static class DelCommand
+    {
+        public static string Help()
+        {
+            return "Run this command to delete a file from the directory.";
+        }
+
+        public static string Run(string[] args)
+        {
+            if (args.Length != 1)
+            {
+                throw new ArgumentException("Only the target file name is needed for deletion.");
+            }
+            BartenderManager.Initalize();
+
+            return BartenderManager.CloudDelete(args[0]).Result;
         }
     }
 
