@@ -15,6 +15,7 @@ using System.Linq.Expressions;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
+using System.IO;
 
 namespace BasicAuthLogon
 {
@@ -155,6 +156,35 @@ namespace BasicAuthLogon
             }
 
             return result;
+        }
+
+        public static async void UploadFileAsync(String fileName)
+        {
+            HttpClient client = new HttpClient();
+            Folder folder = GetFolder(AccessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
+            var fileAddRequest = new FileAddRequest()
+            {
+                Name = fileName,
+                Comment = "Uploaded file",
+                Encryption = "",               // Not encrypted.
+                FileContentType = fileName,
+                InheritFromFolderPermissions = true,
+                IsHidden = false,
+                VersionDescription = "Initial Checkin",
+                FolderId = folder.Id
+            };
+
+            StreamContent streamContent = new StreamContent(await client.GetStreamAsync(URI.ToString()));
+            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent
+            {
+                { new StringContent(JsonConvert.SerializeObject(fileAddRequest)), "fileAdd" },
+                { streamContent, "formFile", fileAddRequest.Name }
+            };
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            var requestURI = $"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{GlobalConfigManager.GetDirectoryEntry()}/files";
+
+            await client.PostAsync(requestURI, multipartFormDataContent);
         }
 
         static async Task<Folder> GetFolder(String accessToken, string dest)
