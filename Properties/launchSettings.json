@@ -2,7 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-      "commandLineArgs": "return"
+      "commandLineArgs": "cd dfasfa"
     }
   }
 }
