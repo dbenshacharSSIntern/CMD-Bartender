@@ -137,20 +137,25 @@ namespace BasicAuthLogon
 
         internal class ValidationResult { public string Message { get; set; } public bool Status { get; set; } }
 
-        public static ValidationResult TestDir(string folderName)
+        public static async Task<ValidationResult> TestDir(string folderName)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
-            string folderPath = HttpUtility.UrlEncode(folderName);
             ValidationResult result = new();
+
 
             try
             {
+                if(await GetFolder(AccessToken.access_token, folderName) is null)
+                {
+                    throw new ArgumentException("Path is invalid.");
+                }
                 result.Message = "Path validated";
                 result.Status = true;
             }
-            catch (ArgumentException ex)
+            catch (Exception ex)
             {
+
                 result.Message = ex.Message;
                 result.Status = false;
             }

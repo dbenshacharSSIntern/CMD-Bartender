@@ -137,8 +137,8 @@ namespace BasicAuthLogon
 
             BartenderManager.Initalize();
             var result = BartenderManager.TestDir(GlobalConfigManager.GetDirectoryEntry());
-
-            return result.Message;
+             result.Wait();
+            return result.Result.Message;
         }
     }
 
@@ -185,13 +185,14 @@ namespace BasicAuthLogon
                 pathModification = $"{GlobalConfigManager.GetDirectory()}{pathModification}/";
             }
             BartenderManager.Initalize();
-            var result = BartenderManager.TestDir(pathModification);
+            var result = BartenderManager.TestDir("librarian://Main/" + pathModification);
+            result.Wait();
 
-            if (result.Status)
+            if (result.Result.Status)
             {
                 GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             }
-            return result.Message;
+            return result.Result.Message;
         }
     }
 
