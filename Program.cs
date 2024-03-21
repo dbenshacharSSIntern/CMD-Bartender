@@ -63,7 +63,7 @@ namespace BasicAuthLogon
 
         public string Run()
         {
-            if (Command == null)
+            if (Command == null || Command is "help")
             {
                 return CommandManager.Run(null, true, Args);
             }
