@@ -16,6 +16,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
 using System.IO;
+using System.Runtime.InteropServices;
+using static System.Net.WebRequestMethods;
 
 namespace BasicAuthLogon
 {
@@ -163,23 +165,53 @@ namespace BasicAuthLogon
             return result;
         }
 
-        public static async void UploadFileAsync(String fileName)
+        static async Task<Space> GetSpaceID(TokenInfo accessToken, string space)
+        {
+
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+
+            try
+            {
+                HttpResponseMessage msg = await client.GetAsync($"https://am1.development.bartendercloud.com/api/librarian/spaces/name/{space}");
+                if (msg.IsSuccessStatusCode)
+                {
+                    var response = await msg.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<Space>(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in getting space ID");
+            }
+
+            return null;
+        }
+
+        public static async Task<Barrista.Models.FileChange> CloudUpload(String fileName)
         {
             HttpClient client = new HttpClient();
             Folder folder = GetFolder(AccessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
+            string fileType = fileName.Substring(fileName.LastIndexOf(".")).Substring(1);
+            string name = fileName.Substring(fileName.LastIndexOf("\\") + 1);
             var fileAddRequest = new FileAddRequest()
             {
-                Name = fileName,
+                Name = name,
                 Comment = "Uploaded file",
                 Encryption = "",               // Not encrypted.
-                FileContentType = fileName,
+                FileContentType = fileType,
                 InheritFromFolderPermissions = true,
                 IsHidden = false,
                 VersionDescription = "Initial Checkin",
                 FolderId = folder.Id
             };
 
-            StreamContent streamContent = new StreamContent(await client.GetStreamAsync(URI.ToString()));
+            if (!System.IO.File.Exists(fileName))
+            {
+                throw new ArgumentException($"{fileName} does not exist.");
+            }
+
+            StreamContent streamContent = new StreamContent(System.IO.File.Open(fileName, FileMode.Open, FileAccess.Read));
             MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent
             {
                 { new StringContent(JsonConvert.SerializeObject(fileAddRequest)), "fileAdd" },
@@ -187,9 +219,14 @@ namespace BasicAuthLogon
             };
 
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
-            var requestURI = $"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{GlobalConfigManager.GetDirectoryEntry()}/files";
-
-            await client.PostAsync(requestURI, multipartFormDataContent);
+            var msg = await client.PostAsync($"https://am1.development.bartendercloud.com/api/librarian/spaces/{1}/files", multipartFormDataContent);
+            if (msg.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<FileChange>(await msg.Content.ReadAsStringAsync());
+            } else
+            {
+                throw new ArgumentException("There was an error with the client");
+            }
         }
 
         static async Task<Folder> GetFolder(String accessToken, string dest)
