@@ -15,6 +15,7 @@ using System.Linq.Expressions;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Reflection;
+using System.IO;
 
 namespace BasicAuthLogon
 {
@@ -55,7 +56,7 @@ namespace BasicAuthLogon
             String folderId = "";
             try
             {
-               folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
+                folderId = GetFolder(AccessToken.access_token, folderName).Result.Id;
             }
             catch (AggregateException ae)
             {
@@ -134,25 +135,61 @@ namespace BasicAuthLogon
 
         }
 
-        public static async Task<string> TestDir()
+        internal class ValidationResult { public string Message { get; set; } public bool Status { get; set; } }
+
+        public static async Task<ValidationResult> TestDir(string folderName)
         {
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
-            string folderName = GlobalConfigManager.GetDirectoryEntry();
-            string folderPath = HttpUtility.UrlEncode(folderName);
+            ValidationResult result = new();
+
 
             try
             {
-                var msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/items/{folderPath}/properties");
-                if (msg.IsSuccessStatusCode)
+                if(await GetFolder(AccessToken.access_token, folderName) is null)
                 {
-                    throw new ArgumentException("Current path is invalid.");
+                    throw new ArgumentException("Path is invalid.");
                 }
-                return "Path validated.";
-            } catch (ArgumentException ex)
-            {
-                return ex.Message;
+                result.Message = "Path validated";
+                result.Status = true;
             }
+            catch (Exception ex)
+            {
+
+                result.Message = ex.Message;
+                result.Status = false;
+            }
+
+            return result;
+        }
+
+        public static async void UploadFileAsync(String fileName)
+        {
+            HttpClient client = new HttpClient();
+            Folder folder = GetFolder(AccessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
+            var fileAddRequest = new FileAddRequest()
+            {
+                Name = fileName,
+                Comment = "Uploaded file",
+                Encryption = "",               // Not encrypted.
+                FileContentType = fileName,
+                InheritFromFolderPermissions = true,
+                IsHidden = false,
+                VersionDescription = "Initial Checkin",
+                FolderId = folder.Id
+            };
+
+            StreamContent streamContent = new StreamContent(await client.GetStreamAsync(URI.ToString()));
+            MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent
+            {
+                { new StringContent(JsonConvert.SerializeObject(fileAddRequest)), "fileAdd" },
+                { streamContent, "formFile", fileAddRequest.Name }
+            };
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            var requestURI = $"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{GlobalConfigManager.GetDirectoryEntry()}/files";
+
+            await client.PostAsync(requestURI, multipartFormDataContent);
         }
 
         static async Task<Folder> GetFolder(String accessToken, string dest)
@@ -184,6 +221,41 @@ namespace BasicAuthLogon
                 return null;
 
 
+            }
+        }
+
+        public static async Task<string> CloudDownload(string filePath, string fileDestination)
+        {
+            //string fileId = GetFile(access_token, filePath).Result.Id;
+            string access_token = AccessToken.access_token;
+            filePath = HttpUtility.UrlEncode(filePath);
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+            HttpResponseMessage msg = await client.GetAsync($"{Website}/api/librarian/files/path/{filePath}/content?versionMajor={1}");
+
+            if (msg.IsSuccessStatusCode || msg.StatusCode == HttpStatusCode.NoContent)
+            {
+                var stream = await msg.Content.ReadAsStreamAsync();
+                try
+                {
+                    string checkPath = fileDestination + "\\" + GetFile(access_token, filePath).Result.Name;
+                    if (System.IO.File.Exists(checkPath) == true)
+                    {
+                        return "File already exists in specified destination. The file download will be cancelled";
+                    }
+                    using (FileStream file = new FileStream(checkPath, FileMode.Create, System.IO.FileAccess.Write))
+                        stream.CopyTo(file);
+                    return "Your transfer was a success!";
+                }
+                catch
+                {
+                    throw new ArgumentException("The destination you specified for the download doesn't exist\nMake sure that the path exists and is a directory (no file attached)");
+                }
+
+            }
+            else
+            {
+                throw new ArgumentException("The cloud path that you specified was invalid. Please input a proper path.");
             }
         }
 

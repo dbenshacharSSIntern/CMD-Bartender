@@ -45,6 +45,15 @@ namespace BasicAuthLogon
                 return DelCommand.Run(args);
             }
 
+            if (Command == "dload" && isHelp)
+            {
+                return DownloadCommand.Help();
+            }
+            if (Command == "dload")
+            {
+                return DownloadCommand.Run(args);
+            }
+
             if (Command == "cd" && isHelp)
             {
                 return CDCommand.Help();
@@ -70,12 +79,13 @@ namespace BasicAuthLogon
                     "config\n" +
                     "cd\n" +
                     "del\n" +
+                    "dload\n" +
                     "return\n" +
                     "status";
             }
 
             throw new ArgumentException("Command does not exist.");
-        }
+            }
     }
     static class DirCommand
     {
@@ -107,11 +117,49 @@ namespace BasicAuthLogon
         {
             if (args.Length != 1)
             {
-                throw new ArgumentException("Only the target file name is needed for deletion.");
+                throw new ArgumentException("Only the target file name or path is needed for deletion.");
             }
             BartenderManager.Initalize();
+            string targetFile = args[0];
+            if (!targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
+            {
+                targetFile = GlobalConfigManager.GetDirectoryEntry() + targetFile;
+            }
 
-            return BartenderManager.CloudDelete(args[0]).Result;
+            return BartenderManager.CloudDelete(targetFile).Result;
+        }
+    }
+
+    static class DownloadCommand
+    {
+        public static string Help()
+        {
+            return "Run this command to download a file.";
+        }
+
+        public static string Run(string[] args)
+        {
+            string downloadPath;
+            if (args.Length > 2)
+            {
+                throw new ArgumentException("Only the target file name and path to download on local machine are needed.");
+            }
+            string targetFile = args[0];
+            if (args.Length == 1)
+            {
+                downloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
+            } else
+            {
+                downloadPath = args[1];
+            }
+            BartenderManager.Initalize();   
+
+            if (!targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
+            {
+                targetFile = GlobalConfigManager.GetDirectoryEntry() + targetFile;
+            }
+
+            return BartenderManager.CloudDownload(targetFile, downloadPath).Result;
         }
     }
 
@@ -131,9 +179,9 @@ namespace BasicAuthLogon
             GlobalConfigManager.ChangeGlobalDirectory("");
 
             BartenderManager.Initalize();
-            var result = BartenderManager.TestDir().Result;
-
-            return result;
+            var result = BartenderManager.TestDir(GlobalConfigManager.GetDirectoryEntry());
+             result.Wait();
+            return result.Result.Message;
         }
     }
 
@@ -180,10 +228,14 @@ namespace BasicAuthLogon
                 pathModification = $"{GlobalConfigManager.GetDirectory()}{pathModification}/";
             }
             BartenderManager.Initalize();
-            var result = BartenderManager.TestDir().Result;
+            var result = BartenderManager.TestDir("librarian://Main/" + pathModification);
+            result.Wait();
 
-            GlobalConfigManager.ChangeGlobalDirectory(pathModification);
-            return result;
+            if (result.Result.Status)
+            {
+                GlobalConfigManager.ChangeGlobalDirectory(pathModification);
+            }
+            return result.Result.Message;
         }
     }
 
