@@ -2,11 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-<<<<<<< HEAD
-      "commandLineArgs": "del librarian://Main/PrestonTest/test.txt"
-=======
-      "commandLineArgs": "dload delis.btw"
->>>>>>> ce6233c1119031659c0ce6fdd3452b3282697eba
+      "commandLineArgs": "HeLP"
     }
   }
 }

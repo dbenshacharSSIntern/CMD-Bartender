@@ -62,8 +62,8 @@ namespace BasicAuthLogon
         }
 
         public string Run()
-        {
-            if (Command == null)
+        { 
+            if (Command == null || Command.ToLower() == "help")
             {
                 return CommandManager.Run(null, true, Args);
             }
