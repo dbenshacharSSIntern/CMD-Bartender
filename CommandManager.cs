@@ -45,6 +45,15 @@ namespace BasicAuthLogon
                 return DelCommand.Run(args);
             }
 
+            if (Command == "dload" && isHelp)
+            {
+                return DownloadCommand.Help();
+            }
+            if (Command == "dload")
+            {
+                return DownloadCommand.Run(args);
+            }
+
             if (Command == "cd" && isHelp)
             {
                 return CDCommand.Help();
@@ -70,6 +79,7 @@ namespace BasicAuthLogon
                     "config\n" +
                     "cd\n" +
                     "del\n" +
+                    "dload\n" +
                     "return\n" +
                     "status";
             }
@@ -117,6 +127,39 @@ namespace BasicAuthLogon
             }
 
             return BartenderManager.CloudDelete(targetFile).Result;
+        }
+    }
+
+    static class DownloadCommand
+    {
+        public static string Help()
+        {
+            return "Run this command to download a file.";
+        }
+
+        public static string Run(string[] args)
+        {
+            string downloadPath;
+            if (args.Length > 2)
+            {
+                throw new ArgumentException("Only the target file name and path to download on local machine are needed.");
+            }
+            string targetFile = args[0];
+            if (args.Length == 1)
+            {
+                downloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads";
+            } else
+            {
+                downloadPath = args[1];
+            }
+            BartenderManager.Initalize();   
+
+            if (!targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
+            {
+                targetFile = GlobalConfigManager.GetDirectoryEntry() + targetFile;
+            }
+
+            return BartenderManager.CloudDownload(targetFile, downloadPath).Result;
         }
     }
 

@@ -224,6 +224,41 @@ namespace BasicAuthLogon
             }
         }
 
+        public static async Task<string> CloudDownload(string filePath, string fileDestination)
+        {
+            //string fileId = GetFile(access_token, filePath).Result.Id;
+            string access_token = AccessToken.access_token;
+            filePath = HttpUtility.UrlEncode(filePath);
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+            HttpResponseMessage msg = await client.GetAsync($"{Website}/api/librarian/files/path/{filePath}/content?versionMajor={1}");
+
+            if (msg.IsSuccessStatusCode || msg.StatusCode == HttpStatusCode.NoContent)
+            {
+                var stream = await msg.Content.ReadAsStreamAsync();
+                try
+                {
+                    string checkPath = fileDestination + "\\" + GetFile(access_token, filePath).Result.Name;
+                    if (System.IO.File.Exists(checkPath) == true)
+                    {
+                        return "File already exists in specified destination. The file download will be cancelled";
+                    }
+                    using (FileStream file = new FileStream(checkPath, FileMode.Create, System.IO.FileAccess.Write))
+                        stream.CopyTo(file);
+                    return "Your transfer was a success!";
+                }
+                catch
+                {
+                    throw new ArgumentException("The destination you specified for the download doesn't exist\nMake sure that the path exists and is a directory (no file attached)");
+                }
+
+            }
+            else
+            {
+                throw new ArgumentException("The cloud path that you specified was invalid. Please input a proper path.");
+            }
+        }
+
         public static async Task<String> CloudDelete(string filePath)
             {
             // Assume that fileId is the ID of the target file.
