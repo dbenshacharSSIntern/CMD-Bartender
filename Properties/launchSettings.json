@@ -2,7 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-      "commandLineArgs": "dload delis.btw"
+      "commandLineArgs": "uload test.txt"
     }
   }
 }

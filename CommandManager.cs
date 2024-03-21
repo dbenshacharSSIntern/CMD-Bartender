@@ -54,6 +54,15 @@ namespace BasicAuthLogon
                 return DownloadCommand.Run(args);
             }
 
+            if (Command == "uload" && isHelp)
+            {
+                return UploadCommand.Help();
+            }
+            if (Command == "uload")
+            {
+                return UploadCommand.Run(args);
+            }
+
             if (Command == "cd" && isHelp)
             {
                 return CDCommand.Help();
@@ -80,6 +89,7 @@ namespace BasicAuthLogon
                     "cd\n" +
                     "del\n" +
                     "dload\n" +
+                    "uload\n" +
                     "return\n" +
                     "status";
             }
@@ -160,6 +170,31 @@ namespace BasicAuthLogon
             }
 
             return BartenderManager.CloudDownload(targetFile, downloadPath).Result;
+        }
+    }
+
+    static class UploadCommand
+    {
+        public static string Help()
+        {
+            return "Run this command to upload a file.";
+        }
+
+        public static string Run(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                throw new ArgumentException("Only the target file path on your local machine is needed.");
+            }
+            string targetFilePath = args[0];
+            if (!targetFilePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)))
+            {
+                targetFilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads\\" + targetFilePath;
+            }
+
+            BartenderManager.Initalize();
+            BartenderManager.CloudUpload(targetFilePath);
+            return "Successful upload.";
         }
     }
 
