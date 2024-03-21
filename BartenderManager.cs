@@ -188,14 +188,15 @@ namespace BasicAuthLogon
             return null;
         }
 
-        public static async void CloudUpload(String fileName)
+        public static async Task<Barrista.Models.FileChange> CloudUpload(String fileName)
         {
             HttpClient client = new HttpClient();
             Folder folder = GetFolder(AccessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
             string fileType = fileName.Substring(fileName.LastIndexOf(".")).Substring(1);
+            string name = fileName.Substring(fileName.LastIndexOf("\\") + 1);
             var fileAddRequest = new FileAddRequest()
             {
-                Name = fileName,
+                Name = name,
                 Comment = "Uploaded file",
                 Encryption = "",               // Not encrypted.
                 FileContentType = fileType,
@@ -218,11 +219,13 @@ namespace BasicAuthLogon
             };
 
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
-            var dest = GlobalConfigManager.GetDirectoryEntry();
-            var msg = await client.PostAsync($"https://am1.development.bartendercloud.com/api/librarian/spaces/{GetSpaceID(AccessToken, dest.Split("/")[2]).Result.SpaceId}/files", multipartFormDataContent);
-            if (!msg.IsSuccessStatusCode)
+            var msg = await client.PostAsync($"https://am1.development.bartendercloud.com/api/librarian/spaces/{1}/files", multipartFormDataContent);
+            if (msg.IsSuccessStatusCode)
             {
-                throw new Exception();
+                return JsonConvert.DeserializeObject<FileChange>(await msg.Content.ReadAsStringAsync());
+            } else
+            {
+                throw new ArgumentException("There was an error with the client");
             }
         }
 

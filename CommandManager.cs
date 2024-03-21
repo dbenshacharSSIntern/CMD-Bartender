@@ -193,8 +193,13 @@ namespace BasicAuthLogon
             }
 
             BartenderManager.Initalize();
-            BartenderManager.CloudUpload(targetFilePath);
-            return "Successful upload.";
+            var result = BartenderManager.CloudUpload(targetFilePath);
+            result.Wait();
+            if (result.IsCompleted)
+            {
+                return "Success.";
+            }
+            return "Failure.";
         }
     }
 
