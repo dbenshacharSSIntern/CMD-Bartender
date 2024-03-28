@@ -180,7 +180,7 @@ namespace BasicAuthLogon
                     return JsonConvert.DeserializeObject<Space>(response);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Error in getting space ID");
             }
@@ -313,7 +313,6 @@ namespace BasicAuthLogon
                     {
                         if (ex is ArgumentException)
                         {
-                            Console.WriteLine(ex.Message);
                             return (ex.Message);
 
                         }
@@ -337,18 +336,15 @@ namespace BasicAuthLogon
                 {
 
                     //return JsonConvert.DeserializeObject<FileChange>(await msg.Content.ReadAsStringAsync());
-                    Console.WriteLine("File deleted!");
                     return "File was deleted successfully!";
 
                 }
                 else if (msg.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    Console.WriteLine("File doesn't exist to delete");
-                    return "";
+                    return "File doesn't exist to delete";
                 }
                 else
                 {
-                    Console.WriteLine("Something went wrong, your file couldn't be deleted.");
                     throw new ArgumentException("Something went wrong, your file couldn't be deleted.");
                 }
             }
