@@ -2,11 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-<<<<<<< HEAD
       "commandLineArgs": "HeLP"
-=======
-      "commandLineArgs": "uload test.txt"
->>>>>>> 672f2702496001755a59d032a7dd1a06c2694f33
     }
   }
 }
