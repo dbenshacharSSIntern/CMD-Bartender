@@ -18,6 +18,8 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
+using System.Reflection.Emit;
+using System.Text.Json.Nodes;
 
 namespace BasicAuthLogon
 {
@@ -160,6 +162,43 @@ namespace BasicAuthLogon
 
                 result.Message = ex.Message;
                 result.Status = false;
+            }
+
+            return result;
+        }
+
+        public static async Task<ValidationResult> MakeFolder(string name)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            var parentFolderID = GlobalConfigManager.GetDirectoryEntry();
+            ValidationResult result = new ValidationResult();
+
+            var createRequest = new FolderCreateRequest()
+            {
+                Name = name,
+                ParentFolderId = GetFolder(AccessToken.access_token, parentFolderID).Result.Id,
+                IsHidden = false,
+                InheritPermissionsFromParent = true
+            };
+
+            HttpRequestMessage request = new HttpRequestMessage
+            {
+                RequestUri = new Uri($"https://bartendercloud.com/api/librarian/spaces/{1}/folders"),
+                Content = new StringContent(JsonConvert.SerializeObject(createRequest), Encoding.UTF8, "application/json"),
+                Method = HttpMethod.Post
+            };
+
+            var msg = await client.SendAsync(request);
+
+            if (msg.IsSuccessStatusCode)
+            {
+                result.Status = true;
+                result.Message = "Successfully made folder.";
+            } else
+            {
+                result.Status = false;
+                result.Message = "Failed to create folder.";
             }
 
             return result;

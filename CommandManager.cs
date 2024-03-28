@@ -1,5 +1,6 @@
 ﻿using PasswordBasedAuthLogon;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
 
@@ -81,6 +82,15 @@ namespace BasicAuthLogon
                 return ConfigCommand.Run(args);
             }
 
+            if (Command == "mkdir" && isHelp)
+            {
+                return MakeDirCommand.Help();
+            }
+            if (Command == "mkdir")
+            {
+                return MakeDirCommand.Run(args);
+            }
+
             if (Command == null || isHelp)
             {
                 return "Here is a list of available commands:\n" +
@@ -90,6 +100,7 @@ namespace BasicAuthLogon
                     "del\n" +
                     "dload\n" +
                     "uload\n" +
+                    "mkdir\n" +
                     "return\n" +
                     "status";
             }
@@ -275,6 +286,27 @@ namespace BasicAuthLogon
             {
                 GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             }
+            return result.Result.Message;
+        }
+    }
+
+    static class MakeDirCommand
+    {
+        public static string Help()
+        {
+            return "Run this to create a directory.";
+        }
+
+        public static string Run(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                throw new ArgumentException("Only one argument is needed for makir command.");
+            }
+            var folderName = args[0];
+            BartenderManager.Initalize();
+            var result = BartenderManager.MakeFolder(folderName);
+            result.Wait();
             return result.Result.Message;
         }
     }
