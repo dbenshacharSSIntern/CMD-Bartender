@@ -29,6 +29,11 @@ namespace BasicAuthLogon
             }
         }
 
+        /// <summary>
+        /// Seperates the command of given arguments from its parameters.
+        /// </summary>
+        /// <param name="args">Arguments for a command. First index must be the command name and subsequent indexes must contain arguments to use the command.</param>
+        /// <returns>CommandArgs containing the command and specific arguments for the command that run the given command.</returns>
         static CommandArgs ParseArgs(string[] args)
         {
             CommandArgs CMD;
@@ -61,6 +66,9 @@ namespace BasicAuthLogon
             Args = new string[] { };
         }
 
+        /// <summary>
+        /// Runs the command that CommandArgs holds utilizing the parameters it holds.
+        /// </summary>
         public string Run()
         {
             if (Command == null || Command is "help")
