@@ -2,7 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-      "commandLineArgs": "config password SeagullScientific59&3"
+      "commandLineArgs": "return"
     }
   }
 }

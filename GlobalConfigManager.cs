@@ -50,6 +50,10 @@ namespace PasswordBasedAuthLogon
                 ApplicationID = Profile.ApplicationID;
                 SecretID = Profile.SecretID;
                 Directory = Profile.Directory;
+                if (Directory == "n/a")
+                {
+                    Directory = "";
+                }
                 Website = Profile.Website;
                 configFileExists = true;
             }
