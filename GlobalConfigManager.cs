@@ -44,7 +44,7 @@ namespace PasswordBasedAuthLogon
                 CurrentProfile = jsonProfile.CurrentProfile;
                 TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Email == CurrentProfile);
                 Profile = jsonProfile.Aliuses[TargetIndex];
-
+                 
                 Username = Profile.Email;
                 Password = Profile.Password;
                 ApplicationID = Profile.ApplicationID;
@@ -192,15 +192,22 @@ namespace PasswordBasedAuthLogon
             saveProfile(jProfile);
         }
 
-        public static string AddAlius(string Name)
+        public static void SwitchUser(string Name)
+        {
+            jsonProfile.CurrentProfile = Name;
+            SaveJSON();  
+        }
+
+        public static string ChangeAlius(string Name)
         {
             if (!jsonProfile.Aliuses.Any(alius => alius.Email == Name))
             {
                 jsonProfile.Aliuses.Add(CreateAlius(Name).ToObject<Alius>());
+                SwitchUser(Name);
                 SaveJSON();
                 return "Alius created successfully. No information for alius has been added yet. Account switched to new account.";
             }
-            jsonProfile.CurrentProfile = Name;
+            SwitchUser(Name);
             SaveJSON();
             return "Switched to profile.";
         }

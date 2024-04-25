@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace BasicAuthLogon
 {
@@ -276,7 +277,7 @@ namespace BasicAuthLogon
             {
                 throw new ArgumentException("Enter the email of the profile you wish to switch to.");
             }
-            return GlobalConfigManager.GetDirectoryEntry();
+            return GlobalConfigManager.ChangeAlius(args[0]);
         }
     }
 
@@ -363,6 +364,7 @@ namespace BasicAuthLogon
             else if (args[0] == "username")
             {
                 GlobalConfigManager.ChangeGlobalUsername(args[1]);
+                GlobalConfigManager.SwitchUser(args[1]);
                 return "username changed succesfully";
             }
             else if (args[0] == "password")
