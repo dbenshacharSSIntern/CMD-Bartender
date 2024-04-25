@@ -132,6 +132,7 @@ namespace PasswordBasedAuthLogon
         {
             jsonProfile.Aliuses[TargetIndex] = Profile;
             string jOut = JsonConvert.SerializeObject(jsonProfile);
+            GC.Collect();
             File.WriteAllText(ConfigPath, jOut);
         }
 
