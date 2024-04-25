@@ -26,6 +26,7 @@ namespace PasswordBasedAuthLogon
         private static string Website;
 
         private static JSONProfile jsonProfile;
+        private static Alius Profile;
 
         public static void Initialize()
         {
@@ -40,13 +41,14 @@ namespace PasswordBasedAuthLogon
                 jsonProfile = jsonObj.ToObject<JSONProfile>();
 
                 CurrentProfile = jsonProfile.CurrentProfile;
+                Profile = jsonProfile.Aliuses.Where(alius => alius.Email == CurrentProfile).ElementAt(0);
 
-                Username = "";
-                Password = "";
-                ApplicationID = "";
-                SecretID = "";
-                Directory = "";
-                Website = "";
+                Username = Profile.Email;
+                Password = Profile.Password;
+                ApplicationID = Profile.ApplicationID;
+                SecretID = Profile.SecretID;
+                Directory = Profile.Directory;
+                Website = Profile.Website;
                 configFileExists = true;
             }
             catch
