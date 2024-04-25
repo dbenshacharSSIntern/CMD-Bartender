@@ -27,6 +27,7 @@ namespace PasswordBasedAuthLogon
 
         private static JSONProfile jsonProfile;
         private static Alius Profile;
+        private static int TargetIndex;
 
         public static void Initialize()
         {
@@ -41,7 +42,8 @@ namespace PasswordBasedAuthLogon
                 jsonProfile = jsonObj.ToObject<JSONProfile>();
 
                 CurrentProfile = jsonProfile.CurrentProfile;
-                Profile = jsonProfile.Aliuses.Where(alius => alius.Email == CurrentProfile).ElementAt(0);
+                TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Email == CurrentProfile);
+                Profile = jsonProfile.Aliuses[TargetIndex];
 
                 Username = Profile.Email;
                 Password = Profile.Password;
@@ -63,7 +65,7 @@ namespace PasswordBasedAuthLogon
 
         private static void SetUsername(string value)
         {
-            Username = value;
+            Profile.Email = value;
         }
 
         public static string GetPassword()
@@ -73,7 +75,7 @@ namespace PasswordBasedAuthLogon
 
         private static void SetPassword(string value)
         {
-            Password = value;
+            Profile. Password = value;
         }
 
         public static string GetApplicationID()
@@ -83,7 +85,7 @@ namespace PasswordBasedAuthLogon
 
         private static void SetApplicationID(string value)
         {
-            ApplicationID = value;
+            Profile.ApplicationID = value;
         }
 
         public static string GetSecretID()
@@ -93,7 +95,7 @@ namespace PasswordBasedAuthLogon
 
         private static void SetSecredID(string value)
         {
-            SecretID = value;
+            Profile.SecretID = value;
         }
 
         public static string GetWebsite()
@@ -103,7 +105,7 @@ namespace PasswordBasedAuthLogon
 
         private static void SetWebsite(string value)
         {
-            Website = value;
+            Profile. Website = value;
         }
 
         public static string GetConfigPath()
@@ -123,54 +125,50 @@ namespace PasswordBasedAuthLogon
 
         private static void SetDirectory(string value)
         {
-            Directory = value;
+            Profile. Directory = value;
         }
 
-        private static void ChangeGlobalInfo(string NewValue, int LineNumber)
+        private static void SaveJSON()
         {
-            try
-            {
-            }
-            catch
-            {
-                throw new Exception("There is an unexpected error in your config file.");
-            }
+            jsonProfile.Aliuses[TargetIndex] = Profile;
+            string jOut = JsonConvert.SerializeObject(jsonProfile);
+            File.WriteAllText(ConfigPath, jOut);
         }
 
         public static void ChangeGlobalUsername(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 0);
             SetUsername(NewValue);
+            SaveJSON();
         }
 
         public static void ChangeGlobalPassword(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 1);
             SetPassword(NewValue);
+            SaveJSON();
         }
 
         public static void ChangeGlobalApplicationID(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 2);
             SetApplicationID(NewValue);
+            SaveJSON();
         }
 
         public static void ChangeGlobalSecretID(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 3);
             SetSecredID(NewValue);
+            SaveJSON();
         }
 
         public static void ChangeGlobalDirectory(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 4);
             SetDirectory(NewValue);
+            SaveJSON();
         }
 
         public static void ChangeGlobalWebsite(string NewValue)
         {
-            ChangeGlobalInfo(NewValue, 5);
             SetWebsite(NewValue);
+            SaveJSON();
         }
 
         public static void CreateConfigFile()
