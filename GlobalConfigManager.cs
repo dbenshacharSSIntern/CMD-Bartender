@@ -1,20 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace PasswordBasedAuthLogon
 {
     internal static class GlobalConfigManager
     {
-        private static string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.txt";
-        private static string[] ConfigReader;
+        private static string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.bartenderconfig.json";
         private static bool configFileExists = false;
 
+        private static string CurrentProfile;
         private static string Username;
         private static string Password;
         private static string ApplicationID;
@@ -22,64 +25,35 @@ namespace PasswordBasedAuthLogon
         private static string Directory;
         private static string Website;
 
-        public static void Initialize() 
+        private static JSONProfile jsonProfile;
+
+        public static void Initialize()
         {
             if (!File.Exists(ConfigPath))
             {
                 CreateConfigFile();
             }
 
-            ConfigReader = File.ReadAllLines(ConfigPath);
-
             try
             {
-                while (ConfigReader.Length < 6) {
-                    ConfigReader = ConfigReader.Append("\n").ToArray();
-                }
+                JObject jsonObj = (JObject) JToken.ReadFrom(new JsonTextReader(File.OpenText(ConfigPath)));
+                jsonProfile = jsonObj.ToObject<JSONProfile>();
 
-                Username = RetriveUsername();
-                Password = RetrivePassword();
-                ApplicationID = RetriveApplicationID();
-                SecretID = RetriveSecretID();
-                Directory = RetriveDirectory();
-                Website = RetriveWebsite();
+                CurrentProfile = jsonProfile.CurrentProfile;
+
+                Username = "";
+                Password = "";
+                ApplicationID = "";
+                SecretID = "";
+                Directory = "";
+                Website = "";
                 configFileExists = true;
-            } catch
+            }
+            catch
             {
                 Console.WriteLine("Warning: Config file not found for user and may not contain correct information.");
             }
         }
-
-        private static string RetriveUsername()
-        {
-            return GetConfigFileLine(0);
-        }
-
-        private static string RetrivePassword()
-        {
-            return GetConfigFileLine(1);
-        }
-
-        private static string RetriveApplicationID()
-        {
-            return GetConfigFileLine(2);
-        }
-
-        private static string RetriveSecretID()
-        {
-            return GetConfigFileLine(3);
-        }
-
-        private static string RetriveDirectory()
-        {
-            return GetConfigFileLine(4);
-        }
-
-        private static string RetriveWebsite()
-        {
-            return GetConfigFileLine(5);
-        }
-
         public static string GetUsername()
         {
             return Username;
@@ -150,11 +124,10 @@ namespace PasswordBasedAuthLogon
             Directory = value;
         }
 
-        private static void ChangeGlobalInfo(string NewValue,int LineNumber)
+        private static void ChangeGlobalInfo(string NewValue, int LineNumber)
         {
             try
             {
-                WriteConfigFileLine(LineNumber, NewValue);
             }
             catch
             {
@@ -198,26 +171,51 @@ namespace PasswordBasedAuthLogon
             SetWebsite(NewValue);
         }
 
-        private static string GetConfigFileLine(int LineNumber)
-        {
-            return ConfigReader[LineNumber];
-        }
-
-        private static void WriteConfigFileLine(int LineNumber, string NewValue)
-        {
-            ConfigReader[LineNumber] = NewValue;
-            File.WriteAllLines(GetConfigPath(), ConfigReader);
-        }
-
         public static void CreateConfigFile()
         {
-            File.WriteAllLines(GetConfigPath(), new string[6]);
-            Initialize();
+            var jProfile = new JObject(new JProperty("CurrentProfile", "n/a"),
+                new JProperty("Aliuses",
+                new JArray(new JObject(
+                    new JProperty("Email", "n/a"),
+                    new JProperty("Password", "n/a"),
+                    new JProperty("ApplicationID", "n/a"),
+                    new JProperty("SecretID", "n/a"),
+                    new JProperty("Directory", "n/a"),
+                    new JProperty("Website", "n/a")
+            ))));
+
+            saveProfile(jProfile);
+        }
+
+        public static void saveProfile(JObject json)
+        {
+            using (StreamWriter file = File.CreateText(ConfigPath))
+            using (JsonTextWriter writer = new JsonTextWriter(file))
+            {
+                json.WriteTo(writer);
+            }
         }
 
         public static bool GetConfigFileExists()
         {
             return configFileExists;
         }
+    }
+
+    public class Alius
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string ApplicationID { get; set; }
+        public string SecretID { get; set; }
+        public string Directory { get; set; }
+        public string Website { get; set; }
+
+    }
+
+    public class JSONProfile
+    {
+        public string CurrentProfile { get; set; }
+        public List<Alius> Aliuses { get; set; }
     }
 }
