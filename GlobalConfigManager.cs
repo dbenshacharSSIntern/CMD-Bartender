@@ -172,20 +172,37 @@ namespace PasswordBasedAuthLogon
             SaveJSON();
         }
 
-        public static void CreateConfigFile()
+        public static JObject CreateAlius(string name)
         {
-            var jProfile = new JObject(new JProperty("CurrentProfile", "n/a"),
-                new JProperty("Aliuses",
-                new JArray(new JObject(
-                    new JProperty("Email", "n/a"),
+            return new JObject(
+                    new JProperty("Email", name),
                     new JProperty("Password", "n/a"),
                     new JProperty("ApplicationID", "n/a"),
                     new JProperty("SecretID", "n/a"),
                     new JProperty("Directory", "n/a"),
-                    new JProperty("Website", "n/a")
-            ))));
+                    new JProperty("Website", "n/a"));
+        }
+
+        public static void CreateConfigFile()
+        {
+            var jProfile = new JObject(new JProperty("CurrentProfile", "n/a"),
+                new JProperty("Aliuses",
+                new JArray(CreateAlius("n/a"))));
 
             saveProfile(jProfile);
+        }
+
+        public static string AddAlius(string Name)
+        {
+            if (!jsonProfile.Aliuses.Any(alius => alius.Email == Name))
+            {
+                jsonProfile.Aliuses.Add(CreateAlius(Name).ToObject<Alius>());
+                SaveJSON();
+                return "Alius created successfully. No information for alius has been added yet. Account switched to new account.";
+            }
+            jsonProfile.CurrentProfile = Name;
+            SaveJSON();
+            return "Switched to profile.";
         }
 
         public static void saveProfile(JObject json)

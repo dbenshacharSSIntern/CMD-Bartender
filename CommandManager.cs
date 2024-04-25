@@ -91,6 +91,15 @@ namespace BasicAuthLogon
                 return MakeDirCommand.Run(args);
             }
 
+            if (Command == "switch" && isHelp)
+            {
+                return SwitchCommand.Help();
+            }
+            if (Command == "switch")
+            {
+                return SwitchCommand.Run(args);
+            }
+
             if (Command == null || isHelp)
             {
                 return "Here is a list of available commands:\n" +
@@ -102,7 +111,8 @@ namespace BasicAuthLogon
                     "uload\n" +
                     "mkdir\n" +
                     "return\n" +
-                    "status";
+                    "status" +
+                    "switch";
             }
 
             throw new ArgumentException("Command does not exist.");
@@ -248,6 +258,23 @@ namespace BasicAuthLogon
             if (args.Length > 0)
             {
                 throw new ArgumentException("No arguments are needed for status command.");
+            }
+            return GlobalConfigManager.GetDirectoryEntry();
+        }
+    }
+
+    static class SwitchCommand
+    {
+        public static string Help()
+        {
+            return "Run this to switch to a profile or create one if it doesn't exist already.";
+        }
+
+        public static string Run(string[] args)
+        {
+            if (args.Length > 1)
+            {
+                throw new ArgumentException("Enter the email of the profile you wish to switch to.");
             }
             return GlobalConfigManager.GetDirectoryEntry();
         }
