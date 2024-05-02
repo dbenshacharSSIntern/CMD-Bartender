@@ -32,6 +32,8 @@ namespace BasicAuthLogon
         public static void Initalize() {
             AccessToken = BIDSManager.GetTokenInfo(GlobalConfigManager.GetAlius());
             URI = new Uri(AccessToken.dataCenterURI);
+            client.BaseAddress = URI;
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.accessToken.access_token}");
         }
 
         public static async Task<String> DisplayFolderDir(string folderName)
@@ -39,7 +41,7 @@ namespace BasicAuthLogon
             String folderId = "";
             try
             {
-                folderId = GetFolder(AccessToken.accessToken, folderName).Result.Id;
+                folderId = GetFolder(AccessToken.accessToken.access_token, folderName).Result.Id;
             }
             catch (AggregateException ae)
             {
@@ -53,8 +55,6 @@ namespace BasicAuthLogon
             }
 
             String dirs = "";
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.accessToken}");
 
             var itemsRequest = new ItemsRequest()
             {
@@ -123,13 +123,12 @@ namespace BasicAuthLogon
         public static async Task<ValidationResult> TestDir(string folderName)
         {
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
             ValidationResult result = new();
 
 
             try
             {
-                if(await GetFolder(AccessToken.access_token, folderName) is null)
+                if(await GetFolder(AccessToken.accessToken.access_token, folderName) is null)
                 {
                     throw new ArgumentException("Path is invalid.");
                 }
@@ -149,14 +148,14 @@ namespace BasicAuthLogon
         public static async Task<ValidationResult> MakeFolder(string name)
         {
             var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.accessToken.access_token}");
             var parentFolderID = GlobalConfigManager.GetDirectoryEntry();
             ValidationResult result = new ValidationResult();
 
             var createRequest = new FolderCreateRequest()
             {
                 Name = name,
-                ParentFolderId = GetFolder(AccessToken.access_token, parentFolderID).Result.Id,
+                ParentFolderId = GetFolder(AccessToken.accessToken.access_token, parentFolderID).Result.Id,
                 IsHidden = false,
                 InheritPermissionsFromParent = true
             };
@@ -209,7 +208,7 @@ namespace BasicAuthLogon
         public static async Task<Barrista.Models.FileChange> CloudUpload(String fileName)
         {
             HttpClient client = new HttpClient();
-            Folder folder = GetFolder(AccessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
+            Folder folder = GetFolder(AccessToken.accessToken.access_token, GlobalConfigManager.GetDirectoryEntry()).Result;
             string fileType = fileName.Substring(fileName.LastIndexOf(".")).Substring(1);
             string name = fileName.Substring(fileName.LastIndexOf("\\") + 1);
             var fileAddRequest = new FileAddRequest()
@@ -236,7 +235,7 @@ namespace BasicAuthLogon
                 { streamContent, "formFile", fileAddRequest.Name }
             };
 
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.access_token}");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.accessToken.access_token}");
             var msg = await client.PostAsync($"https://am1.development.bartendercloud.com/api/librarian/spaces/{1}/files", multipartFormDataContent);
             if (msg.IsSuccessStatusCode)
             {
@@ -247,46 +246,40 @@ namespace BasicAuthLogon
             }
         }
 
-        static async Task<Folder> GetFolder(String accessToken, string dest)
+        static async Task<Folder> GetFolder(String accessToken, string path)
         {
-
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-            string folder_name = dest;
-            string folderPath = HttpUtility.UrlEncode(folder_name); // Encodes folder name to usable format
+            string folderPath = HttpUtility.UrlEncode(path); // Encodes folder name to usable format
             // Get folders, including those that are marked as hidden.
             try
             {
                 var requestURI = $"{GlobalConfigManager.GetWebsite()}/api/librarian/folders/path/{folderPath}/properties";
-                HttpResponseMessage msg = await client.GetAsync(requestURI); // tries to access cloud using get method
-                if (msg.IsSuccessStatusCode) // if it can connect
+                HttpResponseMessage msg = await client.GetAsync(requestURI);
+                if (msg.IsSuccessStatusCode)
                 {
                     var response = await msg.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<Folder>(response);
                 }
                 else
-                { // if for some reason something is wrong with msg, throw error
+                {
 
                     throw new Exception(msg.ReasonPhrase);
                 }
             }
             catch (Exception)
-            { // throws the error given above (msg.ReasonPhrase)
+            {
 
                 return null;
-
-
             }
         }
 
         public static async Task<string> CloudDownload(string filePath, string fileDestination)
         {
             //string fileId = GetFile(access_token, filePath).Result.Id;
-            string access_token = AccessToken.access_token;
+            string access_token = AccessToken.accessToken.access_token;
             filePath = HttpUtility.UrlEncode(filePath);
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
-            HttpResponseMessage msg = await client.GetAsync($"{Website}/api/librarian/files/path/{filePath}/content?versionMajor={1}");
+            HttpResponseMessage msg = await client.GetAsync($"{GlobalConfigManager.GetWebsite()}/api/librarian/files/path/{filePath}/content?versionMajor={1}");
 
             if (msg.IsSuccessStatusCode || msg.StatusCode == HttpStatusCode.NoContent)
             {
@@ -317,7 +310,7 @@ namespace BasicAuthLogon
         public static async Task<String> CloudDelete(string filePath)
             {
             // Assume that fileId is the ID of the target file.
-            string accessToken = AccessToken.access_token;
+            string accessToken = AccessToken.accessToken.access_token;
             HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
                 string fileId = "";

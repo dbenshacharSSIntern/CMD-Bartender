@@ -23,6 +23,7 @@ namespace PasswordBasedAuthLogon
         private static string ApplicationID;
         private static string SecretID;
         private static string Directory;
+        private static string Website;
         private static string OrgizationNameDNS;
 
         private static JSONProfile jsonProfile;
@@ -55,6 +56,7 @@ namespace PasswordBasedAuthLogon
                     Directory = "";
                 }
                 OrgizationNameDNS = Profile.OrganizationDNSName;
+                Website = Profile.Website;
                 configFileExists = true;
             }
             catch
@@ -100,6 +102,16 @@ namespace PasswordBasedAuthLogon
         private static void SetSecredID(string value)
         {
             Profile.SecretID = value;
+        }
+
+        private static void SetWebsite(string value)
+        {
+            Profile.Website = value;
+        }
+
+        public static string GetWebsite()
+        {
+            return Website;
         }
 
         public static string GetOrganizationDNS()
@@ -167,6 +179,12 @@ namespace PasswordBasedAuthLogon
         public static void ChangeGlobalDirectory(string NewValue)
         {
             SetDirectory(NewValue);
+            SaveJSON();
+        }
+
+        public static void ChangeGlobalWebsite(string NewValue)
+        {
+            SetWebsite(NewValue);
             SaveJSON();
         }
 
@@ -243,6 +261,7 @@ namespace PasswordBasedAuthLogon
         public string ApplicationID { get; set; }
         public string SecretID { get; set; }
         public string Directory { get; set; }
+        public string Website { get; set; }
         public string OrganizationDNSName { get; set; }
 
     }
