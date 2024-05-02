@@ -44,13 +44,18 @@ namespace PasswordBasedAuthLogon
 
                 CurrentProfile = jsonProfile.CurrentProfile;
                 TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Email == CurrentProfile);
+                if (TargetIndex == -1)
+                {
+                    Console.WriteLine("User not found in settings. Switching to first user.");
+                    TargetIndex = 0;
+                }
                 Profile = jsonProfile.Aliuses[TargetIndex];
                  
                 Username = Profile.Email;
                 Password = Profile.Password;
                 ApplicationID = Profile.ApplicationID;
                 SecretID = Profile.SecretID;
-                Directory = Profile.Directory;
+                 Directory = Profile.Directory;
                 if (Directory == "n/a")
                 {
                     Directory = "";
@@ -202,7 +207,8 @@ namespace PasswordBasedAuthLogon
                     new JProperty("ApplicationID", "n/a"),
                     new JProperty("SecretID", "n/a"),
                     new JProperty("Directory", "n/a"),
-                    new JProperty("Website", "n/a"));
+                    new JProperty("Website", "n/a"),
+                    new JProperty("OrganizationDNSName", "n/a"));
         }
 
         public static void CreateConfigFile()

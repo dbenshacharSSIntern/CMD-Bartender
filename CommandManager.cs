@@ -112,7 +112,7 @@ namespace BasicAuthLogon
                     "uload\n" +
                     "mkdir\n" +
                     "return\n" +
-                    "status" +
+                    "status\n" +
                     "switch";
             }
 
