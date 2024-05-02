@@ -54,7 +54,7 @@ namespace PasswordBasedAuthLogon
                 {
                     Directory = "";
                 }
-                Website = Profile.Website;
+                Website = Profile.OrganizationDNSName;
                 configFileExists = true;
             }
             catch
@@ -107,9 +107,9 @@ namespace PasswordBasedAuthLogon
             return Website;
         }
 
-        private static void SetWebsite(string value)
+        private static void SetOrganizationDNSName(string value)
         {
-            Profile. Website = value;
+            Profile.OrganizationDNSName = value;
         }
 
         public static string GetConfigPath()
@@ -170,9 +170,9 @@ namespace PasswordBasedAuthLogon
             SaveJSON();
         }
 
-        public static void ChangeGlobalWebsite(string NewValue)
+        public static void ChangeGlobalOrginationDNSName(string NewValue)
         {
-            SetWebsite(NewValue);
+            SetOrganizationDNSName(NewValue);
             SaveJSON();
         }
 
@@ -238,7 +238,7 @@ namespace PasswordBasedAuthLogon
         public string ApplicationID { get; set; }
         public string SecretID { get; set; }
         public string Directory { get; set; }
-        public string Website { get; set; }
+        public string OrganizationDNSName { get; set; }
 
     }
 
