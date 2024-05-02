@@ -2,7 +2,6 @@
 using BasicAuthLogon;
 using Newtonsoft.Json;
 using System;
-using static BasicAuthLogon.AccessTokenDecoder;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net;
@@ -10,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace PasswordBasedAuthLogon
 {
-    internal class BIDSManager { 
+    internal class BIDSManager
+    {
 
-        static RestInfo GetTokenInfo(Alius userInfo)
+        public static RestInfo GetTokenInfo(Alius userInfo)
         {
             App app = new App();
             RestInfo restInfo = new RestInfo();
@@ -34,7 +34,7 @@ namespace PasswordBasedAuthLogon
         {
             DecodedToken decodedToken = AccessTokenDecoder.Decode(accessToken);
 
-            if (decodedToken.Payload.ContainsKey(DataCenterClaim))
+            if (decodedToken.Payload.ContainsKey(AccessTokenDecoder.DataCenterClaim))
                 return decodedToken.Payload[AccessTokenDecoder.DataCenterClaim] as string;
             throw new Exception("DataCenterURI missing");
         }
@@ -144,6 +144,88 @@ namespace PasswordBasedAuthLogon
             ClaimsIssuer = i.EndsWith('/') ? i.TrimEnd(new char[] { '/' }) : i;
             i = (string)dictionary["token_endpoint"];
             TokenEndpoint = i.EndsWith('/') ? i.TrimEnd(new char[] { '/' }) : i;
+        }
+    }
+    class TokenInfo
+    {
+        public string access_token { get; set; }
+        public string refresh_token { get; set; }
+        public string id_token { get; set; }
+        public string scope { get; set; }
+        public int expires_in { get; set; } = 0;
+        public string token_type { get; set; }
+    }
+
+    public class DecodedToken
+    {
+        public Dictionary<string, string> Header { get; set; } = new();
+        public Dictionary<string, object> Payload { get; set; } = new();
+        public string Signature { get; set; } = String.Empty;
+    }
+
+    /// <summary>
+    /// Decode an access token
+    /// </summary>
+    public static class AccessTokenDecoder
+    {
+        public static string TenantIDClaim = "https://BarTenderCloud.com/TenantID";
+        public static string UserIDClaim = "https://BarTenderCloud.com/UserID";
+        public static string DataCenterClaim = "https://BarTenderCloud.com/DataCenterURI";
+
+        /// <summary>
+        /// Decode an access token (NOTE: Does not validate the token signature)
+        /// </summary>
+        /// <param name="encodedToken">access token to validate</param>
+        /// <returns>DecodedToken</returns>
+        /// <throws>Exception on invalid token</throws>
+        public static DecodedToken Decode(string encodedToken)
+        {
+            DecodedToken decodedToken = new();
+
+            try
+            {
+                // Split the supplied access token into it's three parts
+                string[] parts = encodedToken.Split('.');
+                if (parts.Length != 3)
+                    throw new Exception("Invalid Access Token. Incorrect number of parts");
+
+                string header = DecodeBase64(parts[0]);
+                string payload = DecodeBase64(parts[1]);
+                string signature = DecodeBase64(parts[2]);
+
+                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
+                if (headerDictionary == null)
+                    throw new Exception("Invalid Access Token. Header empty");
+
+                var payloadDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(payload);
+                if (payloadDictionary == null)
+                    throw new Exception("Invalid Access Token. Payload empty");
+
+                // Validate the token expiration
+                if (!payloadDictionary!.ContainsKey("exp"))
+                    throw new Exception("Invalid Access Token. Expiration missing");
+
+                decodedToken.Signature = signature;
+                decodedToken.Header = headerDictionary;
+                decodedToken.Payload = payloadDictionary;
+            }
+            catch
+            {
+                throw;
+            }
+
+            return decodedToken;
+        }
+
+        // Decode a Base64 string to a string
+        private static string DecodeBase64(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return string.Empty;
+            value = value.Replace(' ', '+').Replace('-', '+').Replace('_', '/').PadRight(4 * ((value.Length + 3) / 4), '=');
+
+            var valueBytes = System.Convert.FromBase64String(value);
+            return System.Text.Encoding.UTF8.GetString(valueBytes);
         }
     }
 }

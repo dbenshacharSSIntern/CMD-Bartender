@@ -23,7 +23,7 @@ namespace PasswordBasedAuthLogon
         private static string ApplicationID;
         private static string SecretID;
         private static string Directory;
-        private static string Website;
+        private static string OrgizationNameDNS;
 
         private static JSONProfile jsonProfile;
         private static Alius Profile;
@@ -54,7 +54,7 @@ namespace PasswordBasedAuthLogon
                 {
                     Directory = "";
                 }
-                Website = Profile.OrganizationDNSName;
+                OrgizationNameDNS = Profile.OrganizationDNSName;
                 configFileExists = true;
             }
             catch
@@ -102,9 +102,9 @@ namespace PasswordBasedAuthLogon
             Profile.SecretID = value;
         }
 
-        public static string GetWebsite()
+        public static string GetOrganizationDNS()
         {
-            return Website;
+            return OrgizationNameDNS;
         }
 
         private static void SetOrganizationDNSName(string value)
@@ -228,6 +228,11 @@ namespace PasswordBasedAuthLogon
         public static bool GetConfigFileExists()
         {
             return configFileExists;
+        }
+
+        public static Alius GetAlius()
+        {
+            return Profile;
         }
     }
 
