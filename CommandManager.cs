@@ -238,7 +238,7 @@ namespace BasicAuthLogon
             {
                 throw new ArgumentException("No arguments are needed for return command.");
             }
-            GlobalConfigManager.ChangeGlobalDirectory("n/a");
+            GlobalConfigManager.ChangeGlobalDirectory("");
 
             BartenderManager.Initalize();
             var result = BartenderManager.TestDir(GlobalConfigManager.GetDirectoryEntry());
