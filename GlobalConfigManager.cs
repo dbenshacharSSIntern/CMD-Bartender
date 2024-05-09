@@ -39,7 +39,9 @@ namespace PasswordBasedAuthLogon
 
             try
             {
-                JObject jsonObj = (JObject) JToken.ReadFrom(new JsonTextReader(File.OpenText(ConfigPath)));
+
+                var reader = File.OpenText(ConfigPath);
+                JObject jsonObj = (JObject) JToken.ReadFrom(new JsonTextReader(reader));
                 jsonProfile = jsonObj.ToObject<JSONProfile>();
 
                 CurrentProfile = jsonProfile.CurrentProfile;
@@ -59,6 +61,8 @@ namespace PasswordBasedAuthLogon
                 OrgizationNameDNS = Profile.OrganizationDNSName;
                 Website = Profile.Website;
                 configFileExists = true;
+
+                reader.Dispose();
             }
             catch
             {
