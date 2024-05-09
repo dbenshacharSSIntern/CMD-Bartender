@@ -93,26 +93,22 @@ namespace PasswordBasedAuthLogon
             string errorMessage;
             TokenInfo token = null;
 
-            Console.WriteLine("Please enter information about an Native application created\nwith grant_type:\"password refresh_token\"\n");
-
             RetrieveAuthenticationConfiguration(CloudCluster);
 
             HttpClient client = new HttpClient();
             Uri uri = new Uri(TokenEndpoint);
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.BaseAddress = uri;
-            string scope = "openid profile BarTenderServiceApi" + (" offline_access");
             var contentBodyList = new List<KeyValuePair<string, string>>();
             contentBodyList.Add(new KeyValuePair<string, string>("grant_type", "password"));
             contentBodyList.Add(new KeyValuePair<string, string>("username", userInfo.Email));
             contentBodyList.Add(new KeyValuePair<string, string>("password", userInfo.Password));
-            contentBodyList.Add(new KeyValuePair<string, string>("client_id", ClientId));
-            contentBodyList.Add(new KeyValuePair<string, string>("client_secret", ClientSecret));
+            contentBodyList.Add(new KeyValuePair<string, string>("client_id", userInfo.ApplicationID));
+            contentBodyList.Add(new KeyValuePair<string, string>("client_secret", userInfo.SecretID));
             contentBodyList.Add(new KeyValuePair<string, string>("audience", "https://BarTenderCloudServiceApi"));
-            contentBodyList.Add(new KeyValuePair<string, string>("scope", scope));
+            contentBodyList.Add(new KeyValuePair<string, string>("scope", "openid profile BarTenderServiceApi"));
 
-            string queryParam = BIDS ? $"?OrganizationDnsName={userInfo.OrganizationDNSName}" : "";
-            var request = new HttpRequestMessage(HttpMethod.Post, queryParam) { Content = new FormUrlEncodedContent(contentBodyList) };
+            var request = new HttpRequestMessage(HttpMethod.Post, $"?OrganizationDnsName={userInfo.OrganizationDNSName}") { Content = new FormUrlEncodedContent(contentBodyList) };
             HttpResponseMessage msg = client.SendAsync(request).Result;
 
             code = msg.StatusCode;

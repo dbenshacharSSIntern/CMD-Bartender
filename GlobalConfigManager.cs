@@ -55,11 +55,7 @@ namespace PasswordBasedAuthLogon
                 Password = Profile.Password;
                 ApplicationID = Profile.ApplicationID;
                 SecretID = Profile.SecretID;
-                 Directory = Profile.Directory;
-                if (Directory == "n/a")
-                {
-                    Directory = "";
-                }
+                Directory = Profile.Directory;
                 OrgizationNameDNS = Profile.OrganizationDNSName;
                 Website = Profile.Website;
                 configFileExists = true;
@@ -206,7 +202,7 @@ namespace PasswordBasedAuthLogon
                     new JProperty("Password", "n/a"),
                     new JProperty("ApplicationID", "n/a"),
                     new JProperty("SecretID", "n/a"),
-                    new JProperty("Directory", "n/a"),
+                    new JProperty("Directory", ""),
                     new JProperty("Website", "n/a"),
                     new JProperty("OrganizationDNSName", "n/a"));
         }
@@ -264,7 +260,7 @@ namespace PasswordBasedAuthLogon
     {
         public string Email { get; set; }
         public string Password { get; set; }
-        public string ApplicationID { get; set; }
+        public string ApplicationID { get; set; } 
         public string SecretID { get; set; }
         public string Directory { get; set; }
         public string Website { get; set; }
