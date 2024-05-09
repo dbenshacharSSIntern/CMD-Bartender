@@ -44,7 +44,7 @@ namespace PasswordBasedAuthLogon
 
                 CurrentProfile = jsonProfile.CurrentProfile;
                 TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Email == CurrentProfile);
-                if (TargetIndex == -1)
+                if (TargetIndex == -1) 
                 {
                     Console.WriteLine("User not found in settings. Switching to first user.");
                     TargetIndex = 0;

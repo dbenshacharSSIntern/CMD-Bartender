@@ -93,7 +93,7 @@ namespace PasswordBasedAuthLogon
             string errorMessage;
             TokenInfo token = null;
 
-            RetrieveAuthenticationConfiguration(CloudCluster);
+            RetrieveAuthenticationConfiguration(userInfo.Website);
 
             HttpClient client = new HttpClient();
             Uri uri = new Uri(TokenEndpoint);
