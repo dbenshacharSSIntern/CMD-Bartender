@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using static System.Net.WebRequestMethods;
 using System.Reflection.Emit;
 using System.Text.Json.Nodes;
+using System.Net.Http.Json;
 
 namespace BasicAuthLogon
 {
@@ -162,7 +163,7 @@ namespace BasicAuthLogon
 
             HttpRequestMessage request = new HttpRequestMessage
             {
-                RequestUri = new Uri($"https://bartendercloud.com/api/librarian/spaces/{1}/folders"),
+                RequestUri = new Uri($"https://am1.development.bartendercloud.com/api/librarian/spaces/{1}/folders"),
                 Content = new StringContent(JsonConvert.SerializeObject(createRequest), Encoding.UTF8, "application/json"),
                 Method = HttpMethod.Post
             };
@@ -171,8 +172,9 @@ namespace BasicAuthLogon
 
             if (msg.IsSuccessStatusCode)
             {
+                Folder folder = JsonConvert.DeserializeObject<Folder>(await msg.Content.ReadAsStringAsync());
                 result.Status = true;
-                result.Message = "Successfully made folder.";
+                result.Message = $"Successfully made folder with ID {folder.Id}";
             } else
             {
                 result.Status = false;
