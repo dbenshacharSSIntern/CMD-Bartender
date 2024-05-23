@@ -151,6 +151,10 @@ namespace BasicAuthLogon
             {
                 throw new ArgumentException("Only the target file name or path is needed for deletion.");
             }
+            if (args.Length == 0)
+            {
+                return Help();
+            }
             BartenderManager.Initalize();
             string targetFile = args[0];
             if (!targetFile.StartsWith(GlobalConfigManager.GetDirectoryEntry()))
@@ -175,6 +179,10 @@ namespace BasicAuthLogon
             if (args.Length > 2)
             {
                 throw new ArgumentException("Only the target file name and path to download on local machine are needed.");
+            }
+            if (args.Length == 0)
+            {
+                return Help();
             }
             string targetFile = args[0];
             if (args.Length == 1)
@@ -207,6 +215,10 @@ namespace BasicAuthLogon
             if (args.Length > 1)
             {
                 throw new ArgumentException("Only the target file path on your local machine is needed.");
+            }
+            if (args.Length == 0)
+            {
+                return Help();
             }
             string targetFilePath = args[0];
             if (!targetFilePath.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)))
@@ -277,6 +289,10 @@ namespace BasicAuthLogon
             {
                 throw new ArgumentException("Enter the email of the profile you wish to switch to.");
             }
+            if (args.Length == 0)
+            {
+                return Help();
+            }
             return GlobalConfigManager.ChangeAlius(args[0]);
         }
     }
@@ -293,6 +309,10 @@ namespace BasicAuthLogon
             if (args.Length > 1)
             {
                 throw new ArgumentException("Only one argument is needed for cd command.");
+            }
+            if (args.Length == 0)
+            {
+                return Help();
             }
             var pathModification = args[0];
             if (pathModification == "..")
@@ -330,6 +350,10 @@ namespace BasicAuthLogon
             if (args.Length > 1)
             {
                 throw new ArgumentException("Only one argument is needed for makir command.");
+            }
+            if (args.Length == 0)
+            {
+                return Help();
             }
             var folderName = args[0];
             BartenderManager.Initalize();
