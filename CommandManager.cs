@@ -368,11 +368,11 @@ namespace BasicAuthLogon
         public static string Help()
         {
             return "Here is how you can rune this command:\n" +
-                "config username {NewUserName}\n" +
+                "config email {NewEmail}\n" +
                 "config password {NewPassword}\n" +
                 "config appID {NewApplicationID}\n" +
                 "config secretID {NewSecretID}\n" +
-                "config websiute {NewWebsite}\n" +
+                "config website {NewWebsite}\n" +
                 "config org {NewOrgName}\n";
         }
 
@@ -390,11 +390,11 @@ namespace BasicAuthLogon
             {
                 return Help();
             }
-            else if (args[0] == "username")
+            else if (args[0] == "email")
             {
                 GlobalConfigManager.ChangeGlobalUsername(args[1]);
                 GlobalConfigManager.SwitchUser(args[1]);
-                return "username changed succesfully";
+                return "email changed succesfully";
             }
             else if (args[0] == "password")
             {
