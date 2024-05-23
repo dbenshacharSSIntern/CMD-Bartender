@@ -362,6 +362,10 @@ namespace BasicAuthLogon
             {
                 throw new ArgumentException("Config only requires 2 commands.");
             }
+            if (args.Length == 0)
+            {
+                return Help();
+            }
             else if (args[0] == "username")
             {
                 GlobalConfigManager.ChangeGlobalUsername(args[1]);

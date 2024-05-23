@@ -18,7 +18,7 @@ namespace PasswordBasedAuthLogon
         private static bool configFileExists = false;
 
         private static string CurrentProfile;
-        private static string Username;
+        private static string UserEmail;
         private static string Password;
         private static string ApplicationID;
         private static string SecretID;
@@ -45,7 +45,7 @@ namespace PasswordBasedAuthLogon
                 jsonProfile = jsonObj.ToObject<JSONProfile>();
 
                 CurrentProfile = jsonProfile.CurrentProfile;
-                TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Email == CurrentProfile);
+                TargetIndex = jsonProfile.Aliuses.FindIndex(alius => alius.Name == CurrentProfile);
                 if (TargetIndex == -1) 
                 {
                     Console.WriteLine("User not found in settings. Switching to first user.");
@@ -53,7 +53,7 @@ namespace PasswordBasedAuthLogon
                 }
                 Profile = jsonProfile.Aliuses[TargetIndex];
                  
-                Username = Profile.Email;
+                UserEmail = Profile.Email;
                 Password = Profile.Password;
                 ApplicationID = Profile.ApplicationID;
                 SecretID = Profile.SecretID;
@@ -71,7 +71,7 @@ namespace PasswordBasedAuthLogon
         }
         public static string GetUsername()
         {
-            return Username;
+            return UserEmail;
         }
 
         private static void SetUsername(string value)
@@ -202,7 +202,8 @@ namespace PasswordBasedAuthLogon
         public static JObject CreateAlius(string name)
         {
             return new JObject(
-                    new JProperty("Email", name),
+                    new JProperty("Name", name),
+                    new JProperty("Email", "n/a"),
                     new JProperty("Password", "n/a"),
                     new JProperty("ApplicationID", "n/a"),
                     new JProperty("SecretID", "n/a"),
@@ -228,7 +229,7 @@ namespace PasswordBasedAuthLogon
 
         public static string ChangeAlius(string Name)
         {
-            if (!jsonProfile.Aliuses.Any(alius => alius.Email == Name))
+            if (!jsonProfile.Aliuses.Any(alius => alius.Name == Name))
             {
                 jsonProfile.Aliuses.Add(CreateAlius(Name).ToObject<Alius>());
                 SwitchUser(Name);
@@ -262,6 +263,7 @@ namespace PasswordBasedAuthLogon
 
     public class Alius
     {
+        public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string ApplicationID { get; set; } 
