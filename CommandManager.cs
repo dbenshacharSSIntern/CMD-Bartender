@@ -385,7 +385,7 @@ namespace BasicAuthLogon
             }
             else if (args[0] == "website")
             {
-                GlobalConfigManager.ChangeGlobalSecretID(args[1]);
+                GlobalConfigManager.ChangeGlobalWebsite(args[1]);
                 return "website changed succesfully";
             }
             else if (args[0] == "org")

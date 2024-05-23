@@ -20,6 +20,8 @@ using static System.Net.WebRequestMethods;
 using System.Reflection.Emit;
 using System.Text.Json.Nodes;
 using System.Net.Http.Json;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace BasicAuthLogon
 {
@@ -380,5 +382,70 @@ namespace BasicAuthLogon
                     throw new ArgumentException("Your file path is not valid. Please input a proper path.\nEx) libraian://Main/Test.txt\nIf you are trying to reach a space, use librarian://[Space Name]/");
                 }
             }
+
+
+        public static void WildCardUpload(string[] args)
+        {
+            string end = args[0].Split('\\').Last();
+            string wildcard = "";
+            string dir = "";
+            bool file = false;
+
+            try
+            {
+                if (System.IO.File.Exists(args[0]) == true)
+                {
+                    file = true;
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+
+                //attr = System.IO.File.GetAttributes(args[0]);
+
+            }
+            catch
+            {
+
+                try
+                {
+                    if (end.Contains('*') && System.IO.Directory.Exists(Path.GetDirectoryName(args[0])))
+                    {
+                        wildcard = end;
+                        file = false;
+                        dir = Path.GetDirectoryName(args[0]);
+
+                    }
+                    else if (System.IO.Directory.Exists(args[0]))
+                    {
+                        wildcard = "";
+                        file = false;
+                        dir = args[0];
+                    }
+                    else
+                    {
+                        throw new ArgumentException();
+                    }
+                    //attr = System.IO.File.GetAttributes(Path.GetDirectoryName(args[0]));
+
+                }
+                catch
+                {
+                    Console.WriteLine("Your file/folder path is invalid. \n" +
+                        "Make sure that if you are uploading a folder of files, end the folder name with a \\\n" +
+                        "If you are uploading a file, make sure the path is correct and that the file actually exists.");
+                }
+            }
+
+/*            if (file == false)
+            {
+                UploadFolder(dir, args[1], AccessToken.accessToken.access_token, wildcard);
+            }
+            else
+            {
+                UploadFile(args[0], args[1], AccessToken.accessToken.access_token);
+            }*/
+        }
     }
 }
