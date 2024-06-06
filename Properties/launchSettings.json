@@ -2,7 +2,7 @@
   "profiles": {
     "PasswordBasedAuthLogon": {
       "commandName": "Project",
-      "commandLineArgs": "switch test2"
+      "commandLineArgs": "return"
     }
   }
 }

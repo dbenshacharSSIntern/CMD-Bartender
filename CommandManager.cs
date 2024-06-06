@@ -334,7 +334,7 @@ namespace BasicAuthLogon
             {
                 GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             }
-            Console.WriteLine($"Current path is {GlobalConfigManager.GetDirectoryEntry()}")
+            Console.WriteLine($"Current path is {GlobalConfigManager.GetDirectoryEntry()}");
             return result.Result.Message;
         }
     }
