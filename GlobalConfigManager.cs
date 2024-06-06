@@ -259,6 +259,25 @@ namespace PasswordBasedAuthLogon
         {
             return Profile;
         }
+
+        public static string GetWorkingPath()
+        {
+            return System.IO.Directory.GetCurrentDirectory();
+        }
+
+        public static string FindPath(string path)
+        {
+            if (path.StartsWith(".."))
+            {
+                return GetWorkingPath() + path.Substring(2);
+            }
+            if (!path.Contains("\\"))
+            {
+                return GetWorkingPath()  + "\\" + path;
+            }
+
+            return path;
+        }
     }
 
     public class Alias

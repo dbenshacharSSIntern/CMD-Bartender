@@ -16,7 +16,7 @@ namespace BasicAuthLogon
     {
         static void Main(string[] args)
         {
-        try
+            try
             {
                 GlobalConfigManager.Initialize();
 
