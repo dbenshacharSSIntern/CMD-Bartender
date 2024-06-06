@@ -293,7 +293,7 @@ namespace BasicAuthLogon
             {
                 return Help();
             }
-            return GlobalConfigManager.ChangeAlius(args[0]);
+            return GlobalConfigManager.ChangeAlias(args[0]);
         }
     }
 
@@ -334,6 +334,7 @@ namespace BasicAuthLogon
             {
                 GlobalConfigManager.ChangeGlobalDirectory(pathModification);
             }
+            Console.WriteLine($"Current path is {GlobalConfigManager.GetDirectoryEntry()}")
             return result.Result.Message;
         }
     }

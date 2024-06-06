@@ -12,7 +12,7 @@ namespace PasswordBasedAuthLogon
     internal class BIDSManager
     {
 
-        public static RestInfo GetTokenInfo(Alius userInfo)
+        public static RestInfo GetTokenInfo(Alias userInfo)
         {
             App app = new App();
             RestInfo restInfo = new RestInfo();
@@ -87,7 +87,7 @@ namespace PasswordBasedAuthLogon
         public bool BIDS { get; set; } = true;
         public string CloudCluster { get; set; } = "https://am1.bartendercloud.com";
 
-        public TokenInfo GetToken(Alius userInfo)
+        public TokenInfo GetToken(Alias userInfo)
         {
             HttpStatusCode code;
             string errorMessage;

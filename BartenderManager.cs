@@ -31,7 +31,7 @@ namespace BasicAuthLogon
         private static Uri URI;
 
         public static void Initalize() {
-            AccessToken = BIDSManager.GetTokenInfo(GlobalConfigManager.GetAlius());
+            AccessToken = BIDSManager.GetTokenInfo(GlobalConfigManager.GetAlias());
             URI = new Uri(AccessToken.dataCenterURI);
             client.BaseAddress = URI;
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {AccessToken.accessToken.access_token}");

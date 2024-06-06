@@ -27,7 +27,7 @@ namespace PasswordBasedAuthLogon
         private static string OrgizationNameDNS;
 
         private static JSONProfile jsonProfile;
-        private static Alius Profile;
+        private static Alias Profile;
         private static int TargetIndex;
 
         public static void Initialize()
@@ -227,11 +227,11 @@ namespace PasswordBasedAuthLogon
             SaveJSON();  
         }
 
-        public static string ChangeAlius(string Name)
+        public static string ChangeAlias(string Name)
         {
             if (!jsonProfile.Aliuses.Any(alius => alius.Name == Name))
             {
-                jsonProfile.Aliuses.Add(CreateAlius(Name).ToObject<Alius>());
+                jsonProfile.Aliuses.Add(CreateAlius(Name).ToObject<Alias>());
                 SwitchUser(Name);
                 SaveJSON();
                 return "Alius created successfully. No information for alius has been added yet. Account switched to new account.";
@@ -255,13 +255,13 @@ namespace PasswordBasedAuthLogon
             return configFileExists;
         }
 
-        public static Alius GetAlius()
+        public static Alias GetAlias()
         {
             return Profile;
         }
     }
 
-    public class Alius
+    public class Alias
     {
         public string Name { get; set; }
         public string Email { get; set; }
@@ -277,6 +277,6 @@ namespace PasswordBasedAuthLogon
     public class JSONProfile
     {
         public string CurrentProfile { get; set; }
-        public List<Alius> Aliuses { get; set; }
+        public List<Alias> Aliuses { get; set; }
     }
 }
